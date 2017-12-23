@@ -19,10 +19,13 @@ fn run(input: String) -> String {
 
     let mut vec: Vec<i64> = Vec::new();
     vec.push(x);
-    for i in x..(y + 1) {
+    loop {
         let &last = vec.last().unwrap();
-        if last < i && i % last == 0 {
-            vec.push(i);
+        let last2 = last * 2;
+        if last2 <= y {
+            vec.push(last2);
+        } else {
+            break;
         }
     }
 
