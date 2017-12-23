@@ -18,13 +18,7 @@ use std::fs::File;
 
 #[test]
 fn test() {
-    let mut file = File::open("test.txt").unwrap();
-    let mut contents = String::new();
-    file.read_to_string(&mut contents).unwrap();
-    let tests = contents.split("<>").map(|t| {
-        let x = t.split("---").collect::<Vec<&str>>();
-        (x[0].trim(), x[1].trim())
-    });
+    let tests = vec![("1 3", "2"), ("7 4", "6"), ("5 5", "5")];
     for (input, output) in tests {
         assert_eq!(run(input.to_string()), output.to_string());
     }
