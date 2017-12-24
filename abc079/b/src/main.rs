@@ -1,6 +1,7 @@
 extern crate core;
 
 use std::io::{self, Read};
+use std::collections::HashMap;
 
 fn main() {
     let mut input = String::new();
@@ -9,18 +10,28 @@ fn main() {
     println!("{}", output);
 }
 
-fn l(i: i32) -> i64 {
-    match i {
-        0 => 2,
-        1 => 1,
-        _ => l(i - 1) + l(i - 2),
+fn l(i: i32, map: &mut HashMap<i32, i64>) -> i64 {
+    match map.get(&i) {
+        Option::Some(&x) => x,
+        Option::None => {
+            let x = l(i - 1, map) + l(i - 2, map);
+            map.insert(i, x);
+            x
+        }
     }
+}
+
+fn lucas(i: i32) -> i64 {
+    let mut map = HashMap::new();
+    map.insert(0, 2);
+    map.insert(1, 1);
+    l(i, &mut map)
 }
 
 fn run(input: String) -> String {
     let i = input.parse::<i32>().unwrap();
 
-    l(i).to_string()
+    lucas(i).to_string()
 }
 
 #[test]
