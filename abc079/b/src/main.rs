@@ -29,7 +29,7 @@ fn lucas(i: i32) -> i64 {
 }
 
 fn run(input: String) -> String {
-    let i = input.parse::<i32>().unwrap();
+    let i = input.trim().parse::<i32>().unwrap();
 
     lucas(i).to_string()
 }
