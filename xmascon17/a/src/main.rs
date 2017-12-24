@@ -1,3 +1,3 @@
 fn main() {
-    println!("{}", "BABAAABAAAAABAB");
+    println!("{}", "BABAAABAABAABAB");
 }
