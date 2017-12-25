@@ -1,117 +1,118 @@
 extern crate hound;
 
 fn main() {
+    let list = read_files();
+
     print!("{}\t\t", "答え");
-    answer();
+    answer(&list);
     println!();
 
     print!("{}\t", "階差数列の絶対値の和");
-    diff();
+    diff(&list);
     println!();
 
     print!("{}\t", "絶対値の分散");
-    variance();
+    variance(&list);
     println!();
 
     print!("{}\t", "絶対値の合計");
-    sample_sum();
+    sample_sum(&list);
     println!();
 
     print!("{}\t", "絶対値の比較");
-    sample();
+    sample(&list);
     println!();
 }
 
-// 答え
-fn answer() {
+type Wav = Vec<i16>;
+type WavList = Vec<(Wav, Wav)>;
+
+fn read_files() -> WavList {
+    fn read(name: &str) -> Vec<i16> {
+        let mut reader = hound::WavReader::open(name).unwrap();
+        reader
+            .samples::<i16>()
+            .map(|x| x.unwrap())
+            .collect::<Vec<_>>()
+    }
+
+    (1..16)
+        .map(|x| {
+            (
+                read(&format!("input/{:>02}_A.wav", x)),
+                read(&format!("input/{:>02}_B.wav", x)),
+            )
+        })
+        .collect::<Vec<_>>()
+}
+
+// 答えlist:WavList
+fn answer(list: &WavList) {
     print!("{}", "AABAAAABABABBAB");
 }
 
 // 階差数列の絶対値の和
-fn diff() {
-    for x in 1..16 {
-        let a = run(&format!("input/{:>02}_A.wav", x));
-        let b = run(&format!("input/{:>02}_B.wav", x));
+fn diff(list: &WavList) {
+    for (a, b) in list.clone() {
+        let a = run(&a);
+        let b = run(&b);
         print!("{}", if a > b { "B" } else { "A" });
     }
 
-    fn run(name: &str) -> i64 {
-        let mut reader = hound::WavReader::open(name).unwrap();
-        let vec = reader
-            .samples::<i32>()
-            .map(|x| x.unwrap())
-            .collect::<Vec<_>>();
-
-        vec.iter()
+    fn run(wav: &Wav) -> i64 {
+        wav.iter()
             .enumerate()
             .map(|(i, &x)| match i {
                 0 => 0i64,
-                _ => ((x as i64) - (vec[i - 1] as i64)).abs(),
+                _ => ((x as i64) - (wav[i - 1] as i64)).abs(),
             })
             .fold(0i64, |sum, i| sum + i as i64)
     }
 }
 
 // 絶対値の分散
-fn variance() {
-    for x in 1..16 {
-        let a = run(&format!("input/{:>02}_A.wav", x));
-        let b = run(&format!("input/{:>02}_B.wav", x));
+fn variance(list: &WavList) {
+    for (a, b) in list.clone() {
+        let a = run(&a);
+        let b = run(&b);
         print!("{}", if a > b { "B" } else { "A" });
     }
 
-    fn run(name: &str) -> i64 {
-        let mut reader = hound::WavReader::open(name).unwrap();
-        let vec = reader
-            .samples::<i16>()
-            .map(|x| (x.unwrap() as i32).abs())
-            .collect::<Vec<_>>();
+    fn run(wav: &Wav) -> i64 {
+        let wav = wav.iter().map(|&x| (x as i32).abs()).collect::<Vec<_>>();
 
-        let sum = vec.iter().fold(0i64, |sum, &i| sum + i as i64);
-        let count = vec.len() as i64;
+        let sum = wav.iter().fold(0i64, |sum, &i| sum + i as i64);
+        let count = wav.len() as i64;
         let ave = sum / count;
-        vec.iter().map(|&x| (x as i64 - ave).pow(2)).sum::<i64>() / count
+        wav.iter().map(|&x| (x as i64 - ave).pow(2)).sum::<i64>() / count
     }
 }
 
 
 // サンプルの絶対値の合計
-fn sample_sum() {
-    for x in 1..16 {
-        let a = run(&format!("input/{:>02}_A.wav", x));
-        let b = run(&format!("input/{:>02}_B.wav", x));
+fn sample_sum(list: &WavList) {
+    for (a, b) in list.clone() {
+        let a = run(&a);
+        let b = run(&b);
         print!("{}", if a > b { "A" } else { "B" });
     }
 
-    fn run(name: &str) -> i64 {
-        let mut reader = hound::WavReader::open(name).unwrap();
-        let vec = reader
-            .samples::<i16>()
-            .map(|x| (x.unwrap() as i32).abs())
-            .collect::<Vec<_>>();
+    fn run(wav: &Wav) -> i64 {
+        let wav = wav.iter().map(|&x| (x as i32).abs()).collect::<Vec<_>>();
 
-        vec.iter().fold(0i64, |sum, &i| sum + i as i64)
+        wav.iter().fold(0i64, |sum, &i| sum + i as i64)
     }
 }
 
 // サンプルごとに比較
-fn sample() {
-    for x in 1..16 {
-        print!(
-            "{}",
-            run(
-                &format!("input/{:>02}_A.wav", x),
-                &format!("input/{:>02}_B.wav", x)
-            )
-        );
+fn sample(list: &WavList) {
+    for (a, b) in list.clone() {
+        print!("{}", run(&a, &b));
     }
 
-    fn run(name_a: &str, name_b: &str) -> String {
-        let mut reader_a = hound::WavReader::open(name_a).unwrap();
-        let iter_a = reader_a.samples::<i16>().map(|x| (x.unwrap() as i32).abs());
-
-        let mut reader_b = hound::WavReader::open(name_b).unwrap();
-        let iter_b = reader_b.samples::<i16>().map(|x| (x.unwrap() as i32).abs());
+    fn run(wav_a: &Wav, wav_b: &Wav) -> String {
+        let iter_a = wav_a.iter().map(|&x| (x as i32).abs());
+        let iter_b = wav_b.iter().map(|&x| (x as i32).abs());
 
         let (a, b) = iter_a
             .zip(iter_b)
