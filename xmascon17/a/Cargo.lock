@@ -1,5 +1,5 @@
 [[package]]
-name = "a"
+name = "xmascon17_a"
 version = "0.1.0"
 dependencies = [
  "hound 3.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
