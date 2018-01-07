@@ -32,8 +32,14 @@ fn run(input: String) -> String {
         })
         .collect::<Vec<_>>();
 
-    let sum = {
-        let mut l2 = list.clone().iter().map(|&(_, x)| x).collect::<Vec<_>>();
+    let max = list.clone().iter().map(|&(x, _)| x).max().unwrap();
+
+    let (sum, len) = {
+        let mut l2 = list.clone()
+            .iter()
+            .map(|&(_, x)| x)
+            .filter(|&x| x > max)
+            .collect::<Vec<_>>();
         l2.sort();
         l2.reverse();
         for i in 1..(l2.len()) {
@@ -44,17 +50,16 @@ fn run(input: String) -> String {
             }
         }
         //投げのみで与えられるダメージ
-        l2.iter().sum::<i64>()
+        (l2.iter().sum::<i64>(), l2.len())
     };
 
     //残り
     let diff = h - sum;
 
     //攻撃回数
-    let c = ((diff as f64) / (list.clone().iter().map(|&(x, _)| x).max().unwrap() as f64)).ceil()
-        as usize;
+    let c = ((diff as f64) / (max as f64)).ceil() as usize;
 
-    (list.len() + c).to_string()
+    (len + c).to_string()
 }
 
 #[test]
