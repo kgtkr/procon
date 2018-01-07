@@ -40,17 +40,22 @@ fn run(input: String) -> String {
             .map(|&(_, x)| x)
             .filter(|&x| x > max)
             .collect::<Vec<_>>();
-        l2.sort();
-        l2.reverse();
-        for i in 1..(l2.len()) {
-            let x = l2.iter().take(i).sum::<i64>();
-            if x > h {
-                //投げのみで倒せる
-                return i.to_string();
+        let only = l2.iter().sum::<i64>();
+        if only >= h {
+            l2.sort();
+            l2.reverse();
+            let mut s = 0;
+            for (i, &x) in l2.iter().enumerate() {
+                s += x;
+                if s >= h {
+                    return (i + 1).to_string();
+                }
             }
+            return "".to_string();
+        } else {
+            //投げのみで与えられるダメージ
+            (only, l2.len())
         }
-        //投げのみで与えられるダメージ
-        (l2.iter().sum::<i64>(), l2.len())
     };
 
     //残り
