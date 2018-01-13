@@ -20,12 +20,9 @@ fn nico_remove(vec: &Vec<bool>) -> Option<Vec<bool>> {
         loop {
             let data = vec.iter()
                 .enumerate()
-                .filter(|&(i, _)| {
-                    let last = indexs.iter().max();
-                    match last {
-                        Some(&last) => last < i,
-                        None => true,
-                    }
+                .skip(match indexs.iter().max() {
+                    Some(&max) => max + 1,
+                    None => 0,
                 })
                 .find(|&(_, &x)| x == find_bool);
             match data {
@@ -84,11 +81,13 @@ fn run(input: String) -> String {
 
 #[test]
 fn test() {
+    let long = "25".repeat(1000);
     let tests = vec![
         ("225525", "2"),
         ("52", "-1"),
         ("2255252252222555552522255255", "5"),
         ("25252", "-1"),
+        (&long[..], "1"),
     ];
     for (i, (input, output)) in tests.into_iter().enumerate() {
         println!("test:{}", i);
