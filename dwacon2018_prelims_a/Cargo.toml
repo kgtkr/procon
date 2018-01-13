@@ -1,0 +1,6 @@
+[package]
+name = "dwacon2018_prelims_a"
+version = "0.1.0"
+authors = ["kgtkr <kgtkr.jp@gmail.com>"]
+
+[dependencies]
