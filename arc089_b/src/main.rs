@@ -44,7 +44,7 @@ fn run(input: String) -> String {
 
     let mut max = 0;
     //x,yをずらす
-    //O(2k^2*2n)
+    //O(2NK^2)
     for (true_color, false_color) in vec![(Color::B, Color::W), (Color::W, Color::B)] {
         for dx in 0..k {
             for dy in 0..k {
