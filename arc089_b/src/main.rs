@@ -44,23 +44,29 @@ fn run(input: String) -> String {
 
     let mut max = 0;
     //x,yをずらす
+    //O(2k^2*2n)
     for (true_color, false_color) in vec![(Color::B, Color::W), (Color::W, Color::B)] {
         for dx in 0..k {
             for dy in 0..k {
-                let count = list.iter()
-                    .filter(|&d| {
-                        let xm = (d.x + dx) % (k * 2) >= k;
-                        let ym = (d.y + dy) % (k * 2) >= k;
-                        //色
-                        let m = xm == ym;
-                        d.c == true_color;
-                        if m {
-                            d.c == true_color
-                        } else {
-                            d.c == false_color
+                let count = {
+                    let mut c = 0;
+                    for d in list.iter() {
+                        if {
+                            let xm = (d.x + dx) % (k * 2) >= k;
+                            let ym = (d.y + dy) % (k * 2) >= k;
+                            //色
+                            let m = xm == ym;
+                            if m {
+                                d.c == true_color
+                            } else {
+                                d.c == false_color
+                            }
+                        } {
+                            c += 1;
                         }
-                    })
-                    .count();
+                    }
+                    c
+                };
 
                 if max < count {
                     max = count;
