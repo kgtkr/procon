@@ -23,11 +23,14 @@ fn run(input: String) -> String {
     let mut a = list[0].clone();
     let mut b = list[1].clone();
 
+    let mut a_sum = a.iter().sum::<i64>();
+    let mut b_sum = b.iter().sum::<i64>();
+
     loop {
         if a == b {
             return "Yes".to_string();
         }
-        if a.iter().sum::<i64>() >= b.iter().sum::<i64>() {
+        if a_sum >= b_sum {
             return "No".to_string();
         }
 
@@ -36,11 +39,13 @@ fn run(input: String) -> String {
         for i in 0..a.len() {
             if !is_a && a[i] < b[i] {
                 a[i] += 2;
+                a_sum += 2;
                 is_a = true;
             }
 
             if !is_b && b[i] < a[i] {
                 b[i] += 1;
+                b_sum += 1;
                 is_b = true;
             }
 
