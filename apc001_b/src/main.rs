@@ -53,6 +53,16 @@ fn run(input: String) -> String {
                 break;
             }
         }
+
+        if !is_a {
+            a[0] += 2;
+            a_sum += 2;
+        }
+
+        if !is_b {
+            b[0] += 1;
+            b_sum += 1;
+        }
     }
 }
 
