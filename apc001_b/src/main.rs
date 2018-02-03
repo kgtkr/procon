@@ -34,34 +34,37 @@ fn run(input: String) -> String {
             return "No".to_string();
         }
 
-        let mut is_a = false;
-        let mut is_b = false;
+        let mut a_c = 0;
+        let mut b_c = 0;
         for i in 0..a.len() {
-            if !is_a && a[i] < b[i] {
-                a[i] += 2;
-                a_sum += 2;
-                is_a = true;
+            if a[i] < b[i] {
+                let d = b[i] - a[i];
+                let d = if d % 2 != 0 { d + 1 } else { d };
+
+                a[i] += d;
+                a_sum += d;
+                a_c += d / 2;
             }
 
-            if !is_b && b[i] < a[i] {
-                b[i] += 1;
-                b_sum += 1;
-                is_b = true;
-            }
+            if b[i] < a[i] {
+                let d = a[i] - b[i];
 
-            if is_a && is_b {
-                break;
+                b[i] += d;
+                b_sum += d;
+                b_c += d;
             }
         }
 
-        if !is_a {
-            a[0] += 2;
-            a_sum += 2;
+        if a_c > b_c {
+            let d = a_c - b_c;
+            b[0] += d;
+            b_sum += d;
         }
 
-        if !is_b {
-            b[0] += 1;
-            b_sum += 1;
+        if a_c < b_c {
+            let d = (b_c - a_c) * 2;
+            a[0] += d;
+            a_sum += d;
         }
     }
 }
