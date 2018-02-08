@@ -1,0 +1,4 @@
+#!/bin/sh
+echo max:60000
+echo -n size:
+wc src/main.rs -m | tr " " "\n" | sed -n 1p
