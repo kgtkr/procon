@@ -20,10 +20,10 @@ fn run(input: String) -> String {
         })
         .collect::<Vec<_>>();
 
+    let path = bfs(&list);
     //白の数
-    let count = list.iter().flat_map(|x| x).filter(|x| **x).count();
-    let len = bfs(list);
-    if let Some(len) = len {
+    let count = list.into_iter().flat_map(|x| x).filter(|x| *x).count();
+    if let Some(len) = path.map(|x| x.len()) {
         (count - len).to_string()
     } else {
         "-1".to_string()
@@ -61,12 +61,24 @@ fn test() {
     }
 }
 
-fn bfs(mut m: Vec<Vec<bool>>) -> Option<usize> {
+#[derive(PartialEq, Debug, Clone)]
+enum Cell {
+    Wall,
+    Empty,
+    Visited(usize, usize),
+}
+fn bfs(m: &Vec<Vec<bool>>) -> Option<Vec<(usize, usize)>> {
+    let mut m = m.iter()
+        .map(|x| {
+            x.iter()
+                .map(|&x| if x { Cell::Empty } else { Cell::Wall })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
     let goal = (m.len() - 1, m[0].len() - 1);
     let mut n: (usize, usize) = (0, 0);
     // Queue に初期値を積む
     let mut queue = vec![n];
-    let mut len = 0usize;
     while queue.len() > 0 {
         // queueから取り出す
         n = queue[0];
@@ -80,13 +92,22 @@ fn bfs(mut m: Vec<Vec<bool>>) -> Option<usize> {
                 let next_x = next_x as usize;
                 let next_y = next_y as usize;
 
-                if (next_x, next_y) == goal {
-                    return Some(len);
-                }
-                if m[next_x][next_y] {
-                    m[next_x][next_y] = false;
+                if m[next_x][next_y] == Cell::Empty {
+                    m[next_x][next_y] = Cell::Visited(n.0, n.1);
                     // Queueに積む
                     queue.push((next_x, next_y))
+                }
+
+                if (next_x, next_y) == goal {
+                    m[0][0] = Cell::Empty;
+                    let mut path = vec![(goal.0, goal.1)];
+                    let mut c = &m[goal.0][goal.1];
+                    while let &Cell::Visited(x, y) = c {
+                        path.push((x, y));
+                        c = &m[x][y];
+                    }
+                    path.reverse();
+                    return Some(path);
                 }
             }
         }
