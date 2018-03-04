@@ -16,10 +16,10 @@ fn run(input: String) -> String {
         .collect::<Vec<_>>();
     // 総当たり
     for i in 0..1 << 4 {
-        let ap = i & 0b1000 == 0;
-        let bp = i & 0b0100 == 0;
-        let cp = i & 0b0010 == 0;
-        let dp = i & 0b0001 == 0;
+        let ap = i & 1 << 3 == 0;
+        let bp = i & 1 << 2 == 0;
+        let cp = i & 1 << 1 == 0;
+        let dp = i & 1 << 0 == 0;
 
         let a = if ap { list[0] } else { -list[0] };
         let b = if bp { list[1] } else { -list[1] };
