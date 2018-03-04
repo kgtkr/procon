@@ -43,28 +43,36 @@ fn run(input: String) -> String {
         r
     };
 
+    //累積和
+    let mut map_sum: Vec<(i32, (i32, i32))> = vec![];
+    for (i, (x, y)) in a_map.into_iter().enumerate() {
+        let old = i as i32 - d;
+        let v = (
+            if old < 0 {
+                0
+            } else {
+                let (old_sum, (old_x, old_y)) = map_sum[old as usize];
+                old_sum + (x - old_x).abs() + (y - old_y).abs()
+            },
+            (x, y),
+        );
+        map_sum.push(v);
+    }
+    let map_sum = map_sum.into_iter().map(|(x, _)| x).collect::<Vec<_>>();
+
     let q_list = input
         .split("\n")
         .skip((2 + h) as usize)
         .map(|x| {
             let list = x.split_whitespace()
-                .map(|x| x.parse::<i32>().unwrap())
+                .map(|x| x.parse::<usize>().unwrap())
                 .collect::<Vec<_>>();
             (list[0], list[1])
         })
         .collect::<Vec<_>>();
     let mut s = Vec::new();
     for (l, r) in q_list {
-        let mut sum = 0;
-        let mut now = l;
-        while now != r {
-            let next = now + d;
-            let (now_x, now_y) = a_map[now as usize - 1];
-            let (next_x, next_y) = a_map[next as usize - 1];
-            sum += (now_x - next_x).abs() + (now_y - next_y).abs();
-            now = next;
-        }
-        s.push(sum.to_string());
+        s.push((map_sum[r - 1] - map_sum[l - 1]).to_string());
     }
     s.join("\n").to_string()
 }
