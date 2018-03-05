@@ -18,11 +18,20 @@ fn run(input: String) -> String {
     n.to_string()
 }
 
-#[test]
-fn test() {
-    let tests = vec![("3 9", "12"), ("31 32", "63")];
-    for (i, (input, output)) in tests.into_iter().enumerate() {
-        println!("test:{}", i);
-        assert_eq!(run(input.to_string()), output.to_string());
+macro_rules! tests {
+    ($($name:ident: $input:expr=>$output:expr,)*) => {
+        mod tests {
+            $(
+                #[test]
+                fn $name() {
+                    assert_eq!(super::run($input.to_string()), $output.to_string());
+                }
+            )*
+        }
     }
+}
+
+tests! {
+    test1: "3 9" => "12",
+    test2: "31 32" => "63",
 }
