@@ -19,11 +19,21 @@ fn run(input: String) -> String {
     ((1900 * m + 100 * (n - m)) * 2u32.pow(m)).to_string()
 }
 
-#[test]
-fn test() {
-    let tests = vec![("1 1", "3800"), ("10 2", "18400"), ("100 5", "608000")];
-    for (i, (input, output)) in tests.into_iter().enumerate() {
-        println!("test:{}", i);
-        assert_eq!(run(input.to_string()), output.to_string());
+macro_rules! tests {
+    ($($name:ident: $input:expr=>$output:expr,)*) => {
+        mod tests {
+            $(
+                #[test]
+                fn $name() {
+                    assert_eq!(super::run($input.to_string()), $output.to_string());
+                }
+            )*
+        }
     }
+}
+
+tests! {
+    test1: "1 1" => "3800",
+    test2: "10 2" => "18400",
+    test3: "100 5" => "608000",
 }
