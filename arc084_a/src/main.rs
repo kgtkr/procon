@@ -14,41 +14,88 @@ fn run(input: String) -> String {
         .split("\n")
         .skip(1)
         .map(|x| {
-            x.split_whitespace()
+            let mut v = x.split_whitespace()
                 .map(|y| y.parse::<i32>().unwrap())
-                .collect::<Vec<_>>()
+                .collect::<Vec<_>>();
+            v.sort();
+            v
         })
         .collect::<Vec<_>>();
 
-    fn f(x: i32, vec: &Vec<Vec<i32>>, i: usize) -> i32 {
-        *&vec[i]
-            .iter()
-            .filter(|&&y| x < y)
-            .map(|&y| {
-                if i == vec.len() - 1 {
-                    1
-                } else {
-                    f(y, vec, i + 1)
-                }
-            })
-            .sum::<i32>()
+    let mut sum = 0;
+    //真ん中のパーツを決める
+    for c in &list[1] {
+        //上段の数
+        let t = lower_bound(&list[0], 0, list[0].len(), c);
+        let b = list[2].len() - upper_bound(&list[2], 0, list[2].len(), c);
+        sum += t * b;
     }
 
-    f(0, &list, 0).to_string()
+    sum.to_string()
 }
 
-#[test]
-fn test() {
-    let tests = vec![
-        ("2\n1 5\n2 4\n3 6", "3"),
-        ("3\n1 1 1\n2 2 2\n3 3 3", "27"),
-        (
-            "6\n3 14 159 2 6 53\n58 9 79 323 84 6\n2643 383 2 79 50 288",
-            "87",
-        ),
-    ];
-    for (i, (input, output)) in tests.into_iter().enumerate() {
-        println!("test:{}", i);
-        assert_eq!(run(input.to_string()), output.to_string());
+macro_rules! tests {
+    ($($name:ident: $input:expr=>$output:expr,)*) => {
+        mod tests {
+            $(
+                #[test]
+                fn $name() {
+                    assert_eq!(super::run($input.to_string()), $output.to_string());
+                }
+            )*
+        }
+    }
+}
+
+tests! {
+    test1: "2
+1 5
+2 4
+3 6" => "3",
+    test2: "3
+1 1 1
+2 2 2
+3 3 3
+" => "27",
+    test3: "6
+3 14 159 2 6 53
+58 9 79 323 84 6
+2643 383 2 79 50 288" => "87",
+}
+
+//vecは昇順ソート済み
+//以上
+fn lower_bound<T: Ord>(vec: &Vec<T>, mut first: usize, mut last: usize, val: &T) -> usize {
+    let mut mid;
+    while last - first > 1 {
+        mid = (first + last) / 2;
+        if &vec[mid] < val {
+            first = mid;
+        } else {
+            last = mid;
+        }
+    }
+    if &vec[first] < val {
+        last
+    } else {
+        first
+    }
+}
+
+//より大きい
+fn upper_bound<T: Ord>(vec: &Vec<T>, mut first: usize, mut last: usize, val: &T) -> usize {
+    let mut mid;
+    while last - first > 1 {
+        mid = (first + last) / 2;
+        if &vec[mid] <= val {
+            first = mid;
+        } else {
+            last = mid;
+        }
+    }
+    if &vec[first] <= val {
+        last
+    } else {
+        first
     }
 }
