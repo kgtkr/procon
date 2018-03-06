@@ -12,7 +12,7 @@ fn main() {
 fn run(input: String) -> String {
     let list = input
         .split_whitespace()
-        .map(|x| x.parse::<i32>().unwrap())
+        .map(|x| x.parse::<i64>().unwrap())
         .collect::<Vec<_>>();
     let n = list[0] + list[1];
     n.to_string()
