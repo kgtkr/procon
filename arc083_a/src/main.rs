@@ -63,6 +63,10 @@ fn run(input: String) -> String {
         }
     }
 
+    if max.1 == 0 && max.2 == 0 {
+        max.1 = a;
+    }
+
     format!("{} {}", max.1, max.2).to_string()
 }
 
