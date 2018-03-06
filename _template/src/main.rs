@@ -34,4 +34,7 @@ macro_rules! tests {
 tests! {
     test1: "3 9" => "12",
     test2: "31 32" => "63",
+    test3: "1 2" => "3",
+    test4: "-1 2" => "1",
+    test5: "10 1" => "11",
 }
