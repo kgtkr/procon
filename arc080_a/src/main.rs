@@ -23,7 +23,7 @@ fn run(input: String) -> String {
                 (a, b, c + 1)
             }
         });
-    let (a, b) = (list.0, list.2 + if list.1 % 2 == 0 { 0 } else { 1 });
+    let (a, b) = (list.0, list.2 + if list.1 == 0 { 0 } else { 1 });
     if a >= b - 1 { "Yes" } else { "No" }.to_string()
 }
 
