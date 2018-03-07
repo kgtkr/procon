@@ -9,8 +9,6 @@ fn main() {
     println!("{}", output);
 }
 
-type M = (usize, usize, i32);
-
 fn run(input: String) -> String {
     let n = input
         .split_whitespace()
