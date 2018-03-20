@@ -1,5 +1,4 @@
 import System.Environment
-import System.IO
 import Data.Maybe
 import Data.List
 import Control.Exception
@@ -17,7 +16,7 @@ main = do
 
 --処理
 solve :: String -> String
-solve s = show $ a + b where [a, b] = fmap read (words s)
+solve s = show $ a + b where [a, b] = fmap read (words s) :: [Int]
 
 tests :: String -> String
 tests text = case testParse text of
@@ -58,6 +57,7 @@ split spratar = foldr f [[]]
  where
   f x (p:ps) | x == spratar = [] : p : ps
              | otherwise    = (x : p) : ps
+  f _ _ = undefined
 
 trimHead :: String -> String
 trimHead = dropWhile (\s -> isJust (elemIndex s [' ', '\t', '\n', '\r']))
