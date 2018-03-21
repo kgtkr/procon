@@ -9,7 +9,7 @@ object Main{
   }
 
   def solve(input:String):String={
-    input.split("").map(_.toInt).sum.toString()
+    input.split("").filter(_=="1").size.toString()
   }
 
   val tests=List("""101""" -> """2""",
