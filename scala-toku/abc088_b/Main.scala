@@ -13,8 +13,6 @@ object Main{
     (a-b).toString()
   }
 
-  def bitween(x:Int,min:Int,max:Int)=min<=x&&x<=max;
-
   val tests=List("""2
 3 1""" -> """2""",
     """3
