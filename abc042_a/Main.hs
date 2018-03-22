@@ -8,8 +8,10 @@ main = do
 
 --処理
 solve :: String -> String
-solve s = if x == [5, 5, 7] then "YES" else "NO"
-  where x = sort $ fmap read (words s) :: [Int]
+solve s = [x !! i]
+ where
+  [x, si] = lines s
+  i       = read si - 1 :: Int
 
 trimHead :: String -> String
 trimHead = dropWhile (\s -> isJust (elemIndex s [' ', '\t', '\n', '\r']))
