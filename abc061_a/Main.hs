@@ -8,9 +8,7 @@ main = do
 
 --処理
 solve :: String -> String
-solve s | a <= c && c <= b = "Yes"
-        | otherwise        = "No"
-  where [a, b, c] = fmap read (words s) :: [Int]
+solve s = show $ (a + b) `mod` 24 where [a, b] = fmap read (words s) :: [Int]
 
 trimHead :: String -> String
 trimHead = dropWhile (\s -> isJust (elemIndex s [' ', '\t', '\n', '\r']))
