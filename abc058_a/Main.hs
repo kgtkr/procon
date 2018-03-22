@@ -1,6 +1,5 @@
 import Data.Maybe
 import Data.List
-import Data.Char
 
 main :: IO ()
 main = do
@@ -9,7 +8,9 @@ main = do
 
 --処理
 solve :: String -> String
-solve = fmap (toUpper . head) . words
+solve s | b - a == c - b = "YES"
+        | otherwise      = "NO"
+  where [a, b, c] = fmap read (words s) :: [Int]
 
 trimHead :: String -> String
 trimHead = dropWhile (\s -> isJust (elemIndex s [' ', '\t', '\n', '\r']))
