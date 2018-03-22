@@ -8,9 +8,12 @@ main = do
 
 --処理
 solve :: String -> String
-solve s | x < 1200  = "ABC"
-        | otherwise = "ARC"
-  where x = read s :: Int
+solve s | x > y     = show x
+        | otherwise = show y
+ where
+  [a, b, c, d] = fmap read (words s) :: [Int]
+  x            = a * b
+  y            = c * d
 
 trimHead :: String -> String
 trimHead = dropWhile (\s -> isJust (elemIndex s [' ', '\t', '\n', '\r']))
