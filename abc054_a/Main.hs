@@ -8,8 +8,8 @@ main = do
 
 --処理
 solve :: String -> String
-solve s | a > b     = "Alice"
-        | b > a     = "Bob"
+solve s | x > y     = "Alice"
+        | y > x     = "Bob"
         | otherwise = "Draw"
  where
   [a, b] = fmap read (words s) :: [Int]
