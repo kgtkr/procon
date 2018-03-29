@@ -16,7 +16,18 @@ main = do
 
 --処理
 solve :: String -> String
-solve s = show $ a + b where [a, b] = fmap read (words s) :: [Int]
+solve s =
+  show
+    $ x
+    + ( sum
+      . fmap (\a -> (length . takeWhile (<=d) . fmap (\x -> x * a + 1)) [0 ..])
+      )
+        list
+ where
+  (line1:line2:line3) = lines s
+  n                   = read line1 :: Int
+  [d, x]              = fmap read (words line2) :: [Int]
+  list                = fmap read line3 :: [Int]
 
 tests :: String -> String
 tests text = case testParse text of
