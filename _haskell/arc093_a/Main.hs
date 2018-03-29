@@ -16,7 +16,16 @@ main = do
 
 --処理
 solve :: String -> String
-solve s = show $ a + b where [a, b] = fmap read (words s) :: [Int]
+solve s = (intercalate "\n" . fmap show) result
+ where
+  [_, line2] = lines s
+  list       = 0 : ((fmap read . words) line2) ++ [0] :: [Int]
+  -- i-1からiまで
+  price      = fmap (\(x, y) -> abs (x - y)) (zip list (drop 1 list))
+  sumPrice   = sum price
+  result     = fmap
+    (\(x, y, z) -> sumPrice + abs (x - z) - (abs (x - y) + abs (y - z)))
+    (zip3 list (drop 1 list) (drop 2 list))
 
 tests :: String -> String
 tests text = case testParse text of
