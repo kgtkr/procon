@@ -75,4 +75,5 @@ tests! {
     test2: "abc" => "abcd",
     test3: "zyxwvutsrqponmlkjihgfedcba" => "-1",
     test4: "abcdefghijklmnopqrstuvwzyx" => "abcdefghijklmnopqrstuvx",
+    test_add1:"yzxwvutsrqponmlkjihgfedcba"=>"z",
 }
