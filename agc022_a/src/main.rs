@@ -1,6 +1,7 @@
 extern crate core;
 
 use std::io::{self, Read};
+use std::collections::BTreeSet;
 
 fn main() {
     let mut input = String::new();
@@ -10,50 +11,34 @@ fn main() {
 }
 
 fn run(input: String) -> String {
-    let s = input.chars().map(|x| (x as usize) - 97).collect::<Vec<_>>();
-    if s.len() != 26 {
-        //使われてない文字で一番小さい文字を追加
-        //使われてるかのフラグ
-        let mut is_use = Vec::new();
-        is_use.resize(26, false);
-        for &x in &s {
-            is_use[x] = true;
-        }
-        let add = is_use
-            .into_iter()
-            .enumerate()
-            .find(|&(_, b)| !b)
-            .map(|(i, _)| (i + 97) as u8 as char)
-            .unwrap();
-        format!("{}{}", input, add)
+    let mut not_use = BTreeSet::new();
+    for c in ('a' as u8)..('z' as u8 + 1) {
+        not_use.insert(c as char);
+    }
+
+    for c in input.clone().chars() {
+        not_use.remove(&c);
+    }
+
+    if input.len() != 26 {
+        format!("{}{}", input, not_use.iter().next().unwrap())
     } else if input == "zyxwvutsrqponmlkjihgfedcba".to_string() {
         "-1".to_string()
     } else {
-        let mut is_use = Vec::new();
-        is_use.resize(27, true);
-
-        //後ろから見ていって一個大きいの入れれるか
-        let mut change = 0;
-        for x in {
-            let mut s = s.clone();
-            s.reverse();
-            s
-        } {
-            if x != 25 && !is_use[x + 1] {
-                change = x;
-                break;
+        for i in 1..27 {
+            //iは削除する個数
+            let base = &input[0..26 - i];
+            let del = &input[26 - i..];
+            let last = input.clone().chars().collect::<Vec<_>>()[26 - i];
+            for c in del.clone().chars() {
+                not_use.insert(c);
             }
-            is_use[x] = false;
+
+            if let Some(c) = not_use.clone().into_iter().find(|&x| x > last) {
+                return format!("{}{}", base, c);
+            }
         }
-
-        let mut s = s.into_iter()
-            .take_while(|&x| x != change)
-            .collect::<Vec<_>>();
-        s.push(change + 1);
-
-        s.into_iter()
-            .map(|x| (x + 97) as u8 as char)
-            .collect::<String>()
+        "-1".to_string()
     }
 }
 
