@@ -70,11 +70,11 @@ mod parser {
 fn main() {
     let mut input = String::new();
     io::stdin().read_to_string(&mut input).unwrap();
-    let output = run(input.trim().to_string());
+    let output = solve(input.trim().to_string());
     println!("{}", output);
 }
 
-fn run(input: String) -> String {
+fn solve(input: String) -> String {
     input!(input=>(a:i64 b:i64));
     let n = a + b;
     n.to_string()
@@ -86,7 +86,7 @@ macro_rules! tests {
             $(
                 #[test]
                 fn $name() {
-                    assert_eq!(super::run($input.to_string()), $output.to_string());
+                    assert_eq!($output.trim().to_string(),super::solve($input.trim().to_string()));
                 }
             )*
         }
