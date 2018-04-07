@@ -88,7 +88,9 @@ fn solve(input: String) -> String {
     for c in 'a' as u8..('z' as u8 + 1) {
         let c = c as char;
 
-        while list.clone().into_iter().any(|x| x.len() != 0 && x[0] == c) {
+        while list.clone().into_iter().all(|x| x.len() != 0)
+            && list.clone().into_iter().any(|x| x[0] == c)
+        {
             if list.clone().into_iter().all(|x| x[0] == c) {
                 for i in 0..list.len() {
                     list[i].remove(0);
