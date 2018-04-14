@@ -81,8 +81,8 @@ fn solve(input: String) -> String {
     let a = list[n - 1];
     //listからmin(b,a-b)が最大の物を求める
     let b = list.into_iter()
-        .map(|b| std::cmp::min(b, a - b))
-        .max()
+        .filter(|&x| x != a)
+        .max_by_key(|&b| std::cmp::min(b, a - b))
         .unwrap();
     format!("{} {}", a, b).to_string()
 }
@@ -101,6 +101,6 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "5\n6 9 4 2 11" => "11 5",
+    test1: "5\n6 9 4 2 11" => "11 6",
     test2: "2\n100 0" => "100 0",
 }
