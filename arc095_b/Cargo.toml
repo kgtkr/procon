@@ -1,0 +1,6 @@
+[package]
+name = "arc095_b"
+version = "0.1.0"
+authors = ["tkr <kgtkr.jp@gmail.com>"]
+
+[dependencies]
