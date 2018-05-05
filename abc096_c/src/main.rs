@@ -79,11 +79,20 @@ fn solve(input: String) -> String {
     let list = list.into_iter()
         .map(|x| x.chars().map(|x| x == '#').collect::<Vec<_>>())
         .collect::<Vec<_>>();
-    let graph = graph::ListGraph::from(list);
-    //グラフの長さ
-    let graph_len = graph.0.len();
-    //有効ノードの長さ
-    let ok_nodes_len = input.chars().filter(|&c| c == '#').count();
+    for y in 0..h {
+        for x in 0..w {
+            if list[y][x] {
+                let t = y != 0 && list[y - 1][x];
+                let b = y != h - 1 && list[y + 1][x];
+                let l = x != 0 && list[y][x - 1];
+                let r = x != w - 1 && list[y][x + 1];
+                if !(t || b || l || r) {
+                    return "No".to_string();
+                }
+            }
+        }
+    }
+    "Yes".to_string()
 }
 
 macro_rules! tests {
