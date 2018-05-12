@@ -77,18 +77,15 @@ fn main() {
 
 fn solve(input: String) -> String {
     input!(input=>(s:#)(k:usize));
-    //let ord_vec = "abcdefghijklmnopqrstuvwxyz".chars().collect::<Vec<_>>();
-    //start
-    let k = k - 1;
     let mut set = BTreeSet::new();
     for start in 0..s.len() {
         //len
-        for len in 1..s.len() - start + 1 {
+        for len in 1..std::cmp::min(s.len() - start, k) + 1 {
             set.insert(s.chars().skip(start).take(len).collect::<String>());
         }
     }
 
-    set.into_iter().nth(k).unwrap().to_string()
+    set.into_iter().nth(k - 1).unwrap().to_string()
 }
 
 macro_rules! tests {
