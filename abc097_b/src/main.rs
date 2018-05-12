@@ -77,11 +77,15 @@ fn main() {
 fn solve(input: String) -> String {
     input!(input=>(x:i64));
     let mut max = 0;
-    for i in 1..100 {
-        let n = i * i;
-        if n <= x {
-            if max < n {
-                max = n;
+    for i in 1..1000 {
+        for j in 2..11 {
+            let n = (i as i64).pow(j as u32);
+            if n <= x {
+                if max < n {
+                    max = n;
+                }
+            } else {
+                break;
             }
         }
     }
