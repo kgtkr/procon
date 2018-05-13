@@ -76,41 +76,43 @@ fn main() {
 
 fn solve(input: String) -> String {
     input!(input=>(n:i64));
-    let (_, is_prime) = prime_sieve(n as usize);
-    let mut count = 0;
-    for r in 1..(n + 1) {
-        if is_prime[r as usize] {
-            count = add(count, ncr(n, r));
-        }
+    let mut hashmap = HashMap::new();
+    for i in 2..(n + 1) {
+        prime_factor(i, &mut hashmap);
     }
-    count.to_string()
+    let mut res = 1;
+    for i in hashmap.into_iter().map(|(_, x)| x + 1) {
+        res = mul(res, i);
+    }
+    res.to_string()
 }
 
-//max以下の素数列挙
-pub fn prime_sieve(n: usize) -> (Vec<usize>, Vec<bool>) {
-    let mut prime = Vec::new();
-    let mut is_prime = Vec::with_capacity(n + 1);
-    is_prime.resize(n + 1, true);
-    is_prime[0] = false;
-    is_prime[1] = false;
-    for i in 2..n + 1 {
-        if is_prime[i] {
-            prime.push(i);
-            {
-                let mut j = 2 * i;
-                while j <= n {
-                    is_prime[j] = false;
-                    j += i;
-                }
-            }
+use std::collections::HashMap;
+//素因数分解
+pub fn prime_factor(mut n: i64, res: &mut HashMap<i64, i64>) {
+    let mut i = 2;
+    while i * i <= n {
+        while n % i == 0 {
+            let v = match res.get(&i) {
+                Some(v) => *v + 1,
+                None => 1,
+            };
+            res.insert(i, v);
+            n /= i;
+        }
+        i += 1;
+    }
+    if n != 1 {
+        {
+            let i = n;
+            let v = match res.get(&i) {
+                Some(v) => *v + 1,
+                None => 1,
+            };
+            res.insert(i, v);
+            n /= i;
         }
     }
-
-    (prime, is_prime)
-}
-
-fn add(a: i64, b: i64) -> i64 {
-    (a + b) % 1000000007
 }
 
 fn mul(a: i64, b: i64) -> i64 {
