@@ -78,7 +78,7 @@ fn solve(input: String) -> String {
     input!(input=>(n:i64));
     let (_, is_prime) = prime_sieve(n as usize);
     let mut count = 0;
-    for r in 2..(n + 1) {
+    for r in 1..(n + 1) {
         if is_prime[r as usize] {
             count = add(count, ncr(n, r));
         }
