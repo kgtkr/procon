@@ -76,18 +76,33 @@ fn main() {
 
 fn solve(input: String) -> String {
     input!(input=>(n:i64));
-    //1円の回数
-    let one = n % 3;
-    //3*m+one=n
-    let m = n / 3;
-    //mが3の倍数か2の倍数でない部分
-    let (one, m) = if m % 2 != 0 && m % 3 != 0 {
-        (one + 3, m - 1)
+    ret(n, 0).to_string()
+}
+
+fn ret(n: i64, c: i64) -> i64 {
+    if n < 6 {
+        n + c
     } else {
-        (one, m)
-    };
-    //mは3か2の倍数
-    n.to_string()
+        std::cmp::min(
+            {
+                //6
+                let (_, b) = log(n, 6);
+                ret(b, c + 1)
+            },
+            {
+                //9
+                let (_, b) = log(n, 9);
+                ret(b, c + 1)
+            },
+        )
+    }
+}
+
+//base^a+b=nとなる(a,b)
+fn log(n: i64, base: i64) -> (i64, i64) {
+    let a = ((n as f64).log(base as f64) + 0.000001) as i64;
+    let b = n - base.pow(a as u32);
+    (a, b)
 }
 
 macro_rules! tests {
@@ -108,4 +123,7 @@ tests! {
     test2: "3" => "3",
     test3: "44852" => "16",
     add1:"108"=>"3",
+    add2:"1"=>"1",
+    add3:"6"=>"1",
+    add4:"7"=>"2",
 }
