@@ -81,7 +81,7 @@ fn solve(input: String) -> String {
     } else if d == 1 {
         100 * (n + (n / 100))
     } else {
-        10000 * n
+        10000 * (n + (n / 100))
     }.to_string()
 }
 
