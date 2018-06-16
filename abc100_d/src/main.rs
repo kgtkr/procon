@@ -74,10 +74,30 @@ fn main() {
     println!("{}", output);
 }
 
+fn f(list: Vec<(i64, i64, i64)>, m: usize, x: i64, y: i64, z: i64) -> i64 {
+    let mut list = list
+        .into_iter()
+        .map(|(a, b, c)| a * x + b * y + c * z)
+        .collect::<Vec<_>>();
+    list.sort_by(|a, b| b.cmp(a));
+    list.into_iter().take(m).fold(0, |sum, i| sum + i)
+}
+
 fn solve(input: String) -> String {
-    input!(input=>(n:usize m:i64){n;list:(i64,i64,i64)});
-    let mut list=list.into_iter().map(|(a,b,c)|)
-    n.to_string()
+    input!(input=>(n:usize m:usize){n;list:(i64,i64,i64)});
+
+    let mut v = vec![
+        f(list.clone(), m, 1, 1, 1),
+        f(list.clone(), m, -1, 1, 1),
+        f(list.clone(), m, 1, -1, 1),
+        f(list.clone(), m, 1, 1, -1),
+        f(list.clone(), m, 1, -1, -1),
+        f(list.clone(), m, -1, 1, -1),
+        f(list.clone(), m, -1, -1, 1),
+        f(list.clone(), m, -1, -1, -1),
+    ];
+    v.sort_by(|a, b| b.cmp(a));
+    v[0].to_string()
 }
 
 macro_rules! tests {
@@ -94,9 +114,8 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "5 3\n3 1 4\n1 5 9\n2 6 5\n3 5 8\n9 7 9" => "56",
+    test2: "5 3\n1 -2 3\n-4 5 -6\n7 -8 -9\n-10 11 -12\n13 -14 15" => "54",
+    test3: "10 5\n10 -80 21\n23 8 38\n-94 28 11\n-26 -2 18\n-69 72 79\n-26 -86 -54\n-72 -50 59\n21 65 -32\n40 -94 87\n-62 18 82" => "638",
+    test4: "3 2\n2000000000 -9000000000 4000000000\n7000000000 -5000000000 3000000000\n6000000000 -1000000000 8000000000" => "30000000000",
 }
