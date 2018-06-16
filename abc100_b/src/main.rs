@@ -77,9 +77,9 @@ fn main() {
 fn solve(input: String) -> String {
     input!(input=>(d:i64 n:i64));
     if d == 0 {
-        n
+        n + (n / 100)
     } else if d == 1 {
-        100 * n
+        100 * (n + (n / 100))
     } else {
         10000 * n
     }.to_string()
@@ -100,6 +100,7 @@ macro_rules! tests {
 
 tests! {
     test1: "0 5" => "5",
+    add1: "0 100" => "101",
     test2: "1 11" => "1100",
     test3: "2 85" => "850000",
 }
