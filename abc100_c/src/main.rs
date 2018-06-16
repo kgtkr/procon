@@ -1,5 +1,6 @@
 extern crate core;
 
+use std::collections::HashMap;
 use std::io::{self, Read};
 
 #[macro_use]
@@ -75,9 +76,31 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(n:usize)(list:[i64]));
+    list.into_iter()
+        .map(|x| prime_factor(x).get(&2).cloned().unwrap_or(0))
+        .fold(0, |sum, i| sum + i)
+        .to_string()
+}
+
+pub fn prime_factor(mut n: i64) -> HashMap<i64, i64> {
+    let mut res: HashMap<i64, i64> = HashMap::new();
+    let mut i = 2;
+    while i * i <= n {
+        while n % i == 0 {
+            let v = match res.get(&i) {
+                Some(v) => *v + 1,
+                None => 1,
+            };
+            res.insert(i, v);
+            n /= i;
+        }
+        i += 1;
+    }
+    if n != 1 {
+        res.insert(n, 1);
+    }
+    res
 }
 
 macro_rules! tests {
@@ -94,9 +117,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "3\n5 2 4" => "3",
+    test2: "4\n631 577 243 199" => "0",
+    test3: "10\n2184 2126 1721 1800 1024 2528 3360 1945 1280 1776" => "39",
 }
