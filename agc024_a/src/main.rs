@@ -76,7 +76,8 @@ fn main() {
 
 fn solve(input: String) -> String {
     input!(input=>(a:i64 b:i64 c:i64 k:i64));
-    let n = a + b;
+    if k % 2 == 0 { -b + a } else { b - a }.to_string()
+
     /*
     (1,0,0)(0,1,0)(0,0,1)
     (0,1,1)(1,0,1)(1,1,0)
@@ -100,16 +101,28 @@ fn solve(input: String) -> String {
 
     x[i+1]=y[i]*2
     y[i+1]=x[i]+y[i]
-    
+
     x[1]=1
-    y[1]=0
+    x[2]=0
     x[i+2]=x[i+1]+x[i]*2
+    x[i]=1/6(2^i-4(-1)^i)
+
+
+    y[1]=0
+    y[2]=1
     y[i+2]=y[i+1]+y[i]*2
+    y[i]=1/6(2(-1)^i+2^i)
+
+
 
 
     b,cについても同様に成り立つ
     */
-    n.to_string()
+    /*
+    x[k](a-b)+y[k](b-a)
+    1/6((2^k-4(-1)^k)(a-b)+(2(-1)^k+2^k)(b-a))
+    b(-1)^k-a(-1)^k
+    */
 }
 
 macro_rules! tests {
@@ -126,9 +139,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "1 2 3 1" => "1",
+    test2: "2 3 2 0" => "-1",
+    test3: "1000000000 1000000000 1000000000 1000000000000000000" => "0",
 }
