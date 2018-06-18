@@ -1,6 +1,5 @@
 extern crate core;
 
-use std::collections::HashMap;
 use std::io::{self, Read};
 
 #[macro_use]
@@ -76,46 +75,15 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(n:usize)(list:[i64]));
-    let sum = list
-        .clone()
-        .into_iter()
-        .scan(0, |state, x| {
-            *state = *state + x;
-            Some(*state)
-        })
-        .collect::<Vec<_>>();
-
-    let xor = list
-        .clone()
-        .into_iter()
-        .scan(0, |state, x| {
-            *state = *state ^ x;
-            Some(*state)
-        })
-        .enumerate()
-        .collect::<Vec<_>>();
-
-    let mut map = HashMap::new();
-    for (i, x) in xor {
-        let ent = map.entry(x).or_insert(vec![]);
-        ent.push(i);
-    }
-
-    println!("xor_map:{:?}", map);
-
-    let mut count = 0;
-    for (i, x) in sum.into_iter().enumerate() {
-        match map.get(&x) {
-            Some(bts) => {
-                let (a, b, c) = bound::bound_count(&bts, &i);
-                count += a + b;
-            }
-            _ => {}
-        }
-    }
-
-    count.to_string()
+    //Sが1、cが2
+    //cが4
+    input!(input=>(s:i64 c:i64));
+    if c <= s * 2 {
+        //cが足りない
+        c / 2
+    } else {
+        s + (c - s * 2) / 4
+    }.to_string()
 }
 
 macro_rules! tests {
@@ -132,7 +100,6 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "4\n2 5 4 6" => "5",
-    test2: "9\n0 0 0 0 0 0 0 0 0" => "45",
-    test3: "19\n885 8 1 128 83 32 256 206 639 16 4 128 689 32 8 64 885 969 1" => "37",
+    test1: "1 6" => "2",
+    test2: "12345 678901" => "175897",
 }
