@@ -75,9 +75,37 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(k:usize));
+    let mut v = Vec::new();
+    'f: for n in 0.. {
+        if n < 3 {
+            for i in 2..11 {
+                v.push(i * 10_i64.pow(n) - 1);
+                if v.len() == k {
+                    break 'f;
+                }
+            }
+        } else {
+            for i in 11.. {
+                v.push(1000 * i - 1);
+                if v.len() == k {
+                    break 'f;
+                }
+            }
+        }
+    }
+    return v
+        .into_iter()
+        .map(|i| i.to_string())
+        .collect::<Vec<_>>()
+        .join("\n");
+}
+
+fn sum(x: i64) -> i64 {
+    x.to_string()
+        .chars()
+        .map(|x| x.to_string().parse::<i64>().unwrap())
+        .sum::<i64>()
 }
 
 macro_rules! tests {
@@ -94,9 +122,6 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "10" => "1\n2\n3\n4\n5\n6\n7\n8\n9\n19",
+    add1:"1000"=>"",
 }
