@@ -75,9 +75,35 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(n:i64 k:i64)(list:[i64]));
+    let &min = list.iter().min().unwrap();
+    let find = list
+        .into_iter()
+        .enumerate()
+        .filter(|&(i, x)| x == min)
+        .map(|(i, _)| i as i64)
+        .collect::<Vec<_>>();
+
+    let mut count = div(find[0] + 1, k);
+    let mut cer = count * (k - 1);
+    for x in find.into_iter().skip(1) {
+        if cer + 1 == x {
+            cer = x;
+        } else if cer >= x {
+
+        } else {
+            let a = div(x - cer + 1, k);
+            count += a;
+            cer += a * (k - 1);
+        }
+    }
+    //last
+    count += div(n - cer - 1, k - 1);
+    count.to_string()
+}
+
+fn div(a: i64, b: i64) -> i64 {
+    (a + (b - 1)) / b
 }
 
 macro_rules! tests {
@@ -94,9 +120,17 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "4 3\n2 3 1 4" => "2",
+    test2: "3 3\n1 2 3" => "1",
+    test3: "8 3\n7 3 1 8 4 6 2 5" => "4",
+    add1: "8 3\n2 1 2 2 2 1" => "4",
+}
+
+pub fn diff_seq(v: Vec<usize>) -> Vec<usize> {
+    v.clone()
+        .into_iter()
+        .skip(1)
+        .zip(v.into_iter())
+        .map(|(a, b)| a - b)
+        .collect()
 }
