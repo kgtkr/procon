@@ -101,7 +101,7 @@ fn solve(input: String) -> String {
 }
 
 fn f(n: usize, list: &Vec<Vec<bool>>, road_len: usize, road_last: usize, flag: Vec<bool>) -> i64 {
-    if road_len == n - 1 {
+    if road_len == n {
         1
     } else {
         let mut sum = 0;
