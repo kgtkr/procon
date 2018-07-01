@@ -101,12 +101,16 @@ fn solve(input: String) -> String {
         .collect::<Vec<_>>();
     let sum = list.clone().into_iter().sum::<i64>();
     let ave = (sum as f64 / list.len() as f64).round() as i64;
-    let mut min_v = <i64>::max_value();
-    list.clone()
-        .into_iter()
-        .map(|x| (x - ave).abs())
-        .sum::<i64>()
-        .to_string()
+
+    let abs_sum = list.clone().into_iter().map(|x| x.abs()).sum::<i64>();
+
+    let hu = list.clone().into_iter().filter(|&x| x < 0).count() as i64;
+    let sei = list.clone().into_iter().filter(|&x| x >= 0).count() as i64;
+    if ave > 0 {
+        abs_sum + hu * ave - sei * ave
+    } else {
+        abs_sum - hu * ave + sei * ave
+    }.to_string()
 }
 
 macro_rules! tests {
