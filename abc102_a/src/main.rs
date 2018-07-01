@@ -26,22 +26,22 @@ mod parser {
     }
 
     macro_rules! value_def {
-    ($line:expr,$name:ident,$t:tt) => {
-        let $name=value!($line,$t);
-    };
+        ($line:expr, $name:ident, $t:tt) => {
+            let $name = value!($line, $t);
+        };
     }
 
     macro_rules! values_def {
-    ($lines:expr,$n:expr,$name:ident,$t:tt) => {
-        let $name={
-        let mut vec=Vec::new();
-        for i in 0..$n{
-            let mut next=$lines.next().unwrap().split_whitespace();
-            vec.push(value!(next,$t));
-        }
-        vec
+        ($lines:expr, $n:expr, $name:ident, $t:tt) => {
+            let $name = {
+                let mut vec = Vec::new();
+                for i in 0..$n {
+                    let mut next = $lines.next().unwrap().split_whitespace();
+                    vec.push(value!(next, $t));
+                }
+                vec
+            };
         };
-    };
     }
 
     macro_rules! value {
@@ -75,9 +75,8 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(n:i64));
+    if n % 2 == 0 { n } else { n * 2 }.to_string()
 }
 
 macro_rules! tests {
@@ -94,9 +93,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "3" => "6",
+    test2: "10" => "10",
+    test3: "999999999" => "1999999998",
 }
