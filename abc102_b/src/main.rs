@@ -75,9 +75,14 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(n:usize)(list:[i64]));
+    let mut max = 0;
+    let mut min = <i64>::max_value();
+    for x in list {
+        max = std::cmp::max(max, x);
+        min = std::cmp::min(min, x);
+    }
+    (max - min).to_string()
 }
 
 macro_rules! tests {
@@ -94,9 +99,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "4\n1 4 6 3" => "5",
+    test2: "2\n1000000000 1" => "999999999",
+    test3: "5\n1 1 1 1 1" => "0",
 }
