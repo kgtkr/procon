@@ -97,11 +97,12 @@ fn solve(input: String) -> String {
     if n == 1 {
         return "0".to_string();
     }
-    let list = list
+    let mut list = list
         .into_iter()
         .enumerate()
         .map(|(i, x)| x - i as i64 - 1)
         .collect::<Vec<_>>();
+    list.sort();
     let sum = list.clone().into_iter().sum::<i64>();
     let ave = (sum as f64 / list.len() as f64).round() as i64;
     let c1 = list[n / 2];
