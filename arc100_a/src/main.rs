@@ -66,7 +66,25 @@ mod parser {
     };
     }
 }
+use std::cmp::{max, min};
 
+macro_rules! max {
+  ($x:expr) => {
+    $x
+  };
+  ($x:expr, $($xs:tt)+) => {
+    max($x,max!($($xs)+))
+  };
+}
+
+macro_rules! min {
+  ($x:expr) => {
+    $x
+  };
+  ($x:expr, $($xs:tt)+) => {
+    min($x,min!($($xs)+))
+  };
+}
 fn main() {
     let mut input = String::new();
     io::stdin().read_to_string(&mut input).unwrap();
@@ -76,8 +94,27 @@ fn main() {
 
 fn solve(input: String) -> String {
     input!(input=>(n:usize)(list:[i64]));
-    let n = a + b;
-    n.to_string()
+    let list = list
+        .into_iter()
+        .enumerate()
+        .map(|(i, x)| x - i as i64 - 1)
+        .collect::<Vec<_>>();
+    let sum = list.clone().into_iter().sum::<i64>();
+    let ave = (sum as f64 / list.len() as f64).round() as i64;
+    min!(
+        list.clone()
+            .into_iter()
+            .map(|x| (x - ave).abs())
+            .sum::<i64>(),
+        list.clone()
+            .into_iter()
+            .map(|x| (x - ave - 1).abs())
+            .sum::<i64>(),
+        list.clone()
+            .into_iter()
+            .map(|x| (x - ave + 1).abs())
+            .sum::<i64>()
+    ).to_string()
 }
 
 macro_rules! tests {
