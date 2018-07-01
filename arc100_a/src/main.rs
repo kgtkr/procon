@@ -94,6 +94,9 @@ fn main() {
 
 fn solve(input: String) -> String {
     input!(input=>(n:usize)(list:[i64]));
+    if n == 1 {
+        return "0".to_string();
+    }
     let list = list
         .into_iter()
         .enumerate()
@@ -101,16 +104,45 @@ fn solve(input: String) -> String {
         .collect::<Vec<_>>();
     let sum = list.clone().into_iter().sum::<i64>();
     let ave = (sum as f64 / list.len() as f64).round() as i64;
-
-    let abs_sum = list.clone().into_iter().map(|x| x.abs()).sum::<i64>();
-
-    let hu = list.clone().into_iter().filter(|&x| x < 0).count() as i64;
-    let sei = list.clone().into_iter().filter(|&x| x >= 0).count() as i64;
-    if ave > 0 {
-        abs_sum + hu * ave - sei * ave
-    } else {
-        abs_sum - hu * ave + sei * ave
-    }.to_string()
+    let c1 = list[n / 2];
+    let c2 = list[n / 2 + 1];
+    let c3 = (c1 + c2) / 2;
+    let c4 = (c1 + c2) / 2 + 1;
+    let c5 = (c1 + c2) / 2 - 1;
+    min!(
+        list.clone()
+            .into_iter()
+            .map(|x| (x - c1).abs())
+            .sum::<i64>(),
+        list.clone()
+            .into_iter()
+            .map(|x| (x - c2).abs())
+            .sum::<i64>(),
+        list.clone()
+            .into_iter()
+            .map(|x| (x - c3).abs())
+            .sum::<i64>(),
+        list.clone()
+            .into_iter()
+            .map(|x| (x - c4).abs())
+            .sum::<i64>(),
+        list.clone()
+            .into_iter()
+            .map(|x| (x - c5).abs())
+            .sum::<i64>(),
+        list.clone()
+            .into_iter()
+            .map(|x| (x - ave).abs())
+            .sum::<i64>(),
+        list.clone()
+            .into_iter()
+            .map(|x| (x - ave + 1).abs())
+            .sum::<i64>(),
+        list.clone()
+            .into_iter()
+            .map(|x| (x - ave - 1).abs())
+            .sum::<i64>()
+    ).to_string()
 }
 
 macro_rules! tests {
@@ -131,4 +163,5 @@ tests! {
     test2: "9\n1 2 3 4 5 6 7 8 9" => "0",
     test3: "6\n6 5 4 3 2 1" => "18",
     test4: "7\n1 1 1 1 2 3 4" => "6",
+    add5: "1\n10" => "0",
 }
