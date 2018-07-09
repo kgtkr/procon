@@ -85,19 +85,28 @@ fn diff_seq(v: Vec<i64>) -> Vec<i64> {
 
 fn solve(input: String) -> String {
     input!(input=>(n:usize)(list:[i64]));
-    if n % 2 != 0 {
-        diff_seq(
-            list.into_iter()
-                .enumerate()
-                .filter(|&(i, _)| i % 2 == 0)
-                .map(|(_, x)| x)
-                .collect(),
-        ).into_iter()
-            .map(|x| x.abs())
-            .fold(0, |sum, i| sum + i)
-    } else {
-        panic!();
-    }.to_string()
+    let mut i = 0;
+    let mut sum = 0;
+    while i < n {
+        if i == n - 1 {
+            break;
+        } else if i == n - 2 {
+            let a = (list[i] - list[i + 1]).abs();
+            i += 1;
+            sum += a;
+        } else {
+            let a = (list[i] - list[i + 1]).abs();
+            let b = (list[i] - list[i + 2]).abs();
+            if a + (list[i + 1] - list[n - 1]).abs() < b + (list[i + 2] - list[n - 1]).abs() {
+                i += 1;
+                sum += a;
+            } else {
+                i += 2;
+                sum += b;
+            }
+        }
+    }
+    sum.to_string()
 }
 
 macro_rules! tests {
