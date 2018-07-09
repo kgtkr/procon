@@ -83,30 +83,36 @@ fn diff_seq(v: Vec<i64>) -> Vec<i64> {
         .collect()
 }
 
+//i番目以降の最小
+fn f(dp: &mut Vec<i64>, list: &Vec<i64>, i: usize) -> i64 {
+    let n = list.len();
+
+    if dp[i] != -1 {
+        return dp[i].clone();
+    }
+
+    let res = if i == n - 1 {
+        0
+    } else if i == n - 2 {
+        f(dp, list, i + 1) + (list[i] - list[i + 1]).abs()
+    } else {
+        let a = (list[i] - list[i + 1]).abs();
+        let b = (list[i] - list[i + 2]).abs();
+        std::cmp::min(
+            f(dp, list, i + 1) + (list[i] - list[i + 1]).abs(),
+            f(dp, list, i + 2) + (list[i] - list[i + 2]).abs(),
+        )
+    };
+
+    dp[i] = res;
+    res
+}
+
 fn solve(input: String) -> String {
     input!(input=>(n:usize)(list:[i64]));
-    let mut i = 0;
-    let mut sum = 0;
-    while i < n {
-        if i == n - 1 {
-            break;
-        } else if i == n - 2 {
-            let a = (list[i] - list[i + 1]).abs();
-            i += 1;
-            sum += a;
-        } else {
-            let a = (list[i] - list[i + 1]).abs();
-            let b = (list[i] - list[i + 2]).abs();
-            if a + (list[i + 1] - list[n - 1]).abs() < b + (list[i + 2] - list[n - 1]).abs() {
-                i += 1;
-                sum += a;
-            } else {
-                i += 2;
-                sum += b;
-            }
-        }
-    }
-    sum.to_string()
+    let mut dp = Vec::with_capacity(n);
+    dp.resize(n, -1);
+    f(&mut dp, &list, 0).to_string()
 }
 
 macro_rules! tests {
