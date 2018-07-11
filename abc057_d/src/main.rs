@@ -104,9 +104,9 @@ fn solve(input: String) -> String {
 
     //ex_vからmin(b,count_v)選ぶ
     //ただし全て同じなら
-    let mut pt = 1;
+    let mut pt = 0;
     if all_eq {
-        for r in ex_v..std::cmp::min(b, count_v) {
+        for r in ex_v..(std::cmp::min(b, count_v) + 1) {
             pt += ncr(count_v as i64, r as i64);
         }
     } else {
