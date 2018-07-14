@@ -1,0 +1,6 @@
+[package]
+name = "abc038_c"
+version = "0.1.0"
+authors = ["tkr <kgtkr.jp@gmail.com>"]
+
+[dependencies]
