@@ -84,14 +84,16 @@ fn solve(input: String) -> String {
     let mut c = 0;
     let mut old = list[0];
     for x in list {
-        if old <= x {
+        if old < x {
             c += 1;
         } else {
             count += c * (c + 1) / 2;
-            c = 0;
+            c = 1;
         }
         old = x;
     }
+
+    count += c * (c + 1) / 2;
 
     count.to_string()
 }
