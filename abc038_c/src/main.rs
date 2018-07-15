@@ -80,9 +80,9 @@ fn main() {
 //n(n+1)/2
 fn solve(input: String) -> String {
     input!(input=>(n:usize)(list:[i64]));
-    let mut count = 0;
-    let mut c = 0;
-    let mut old = list[0];
+    let mut count = 0i64;
+    let mut c = 0i64;
+    let mut old = list[0]-1;
     for x in list {
         if old < x {
             c += 1;
