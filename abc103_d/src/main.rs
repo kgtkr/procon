@@ -1,5 +1,6 @@
 extern crate core;
 
+use std::collections::HashMap;
 use std::io::{self, Read};
 
 #[macro_use]
@@ -75,9 +76,36 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(n:usize m:usize){m;list:(usize,usize)});
+    let list = list
+        .into_iter()
+        .map(|(a, b)| (a - 1, b - 1))
+        .collect::<Vec<_>>();
+    let mut vec = Vec::with_capacity(n);
+    vec.resize(n, None);
+    for (a, b) in list.clone() {
+        if vec[a].map(|x| x > b).unwrap_or(true) {
+            vec[a] = Some(b);
+        }
+    }
+    let mut count = 0;
+    let mut min: Option<usize> = None;
+    for a in 0..n {
+        let b = vec[a];
+        if let Some(b) = b {
+            if min.map(|min| min <= a).unwrap_or(false) {
+                count += 1;
+                min = None;
+            } else {
+                min = Some(if let Some(min) = min {
+                    std::cmp::min(min, b)
+                } else {
+                    b
+                });
+            }
+        }
+    }
+    count.to_string()
 }
 
 macro_rules! tests {
@@ -94,9 +122,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "5 2\n1 4\n2 5" => "1",
+    test2: "9 5\n1 8\n2 7\n3 5\n4 6\n7 9" => "2",
+    test3: "5 10\n1 2\n1 3\n1 4\n1 5\n2 3\n2 4\n2 5\n3 4\n3 5\n4 5" => "4",
 }
