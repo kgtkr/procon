@@ -89,19 +89,20 @@ fn solve(input: String) -> String {
         }
     }
     let mut count = 0;
-    let mut min: Option<usize> = None;
+    let mut min = None;
     for a in 0..n {
         let b = vec[a];
         if let Some(b) = b {
-            if min.map(|min| min <= a).unwrap_or(false) {
-                count += 1;
-                min = None;
-            } else {
-                min = Some(if let Some(min) = min {
-                    std::cmp::min(min, b)
+            if let Some(min_x) = min {
+                if min_x <= a {
+                    count += 1;
+                    min = None;
                 } else {
-                    b
-                });
+                    min = Some(std::cmp::min(min_x, b));
+                }
+            } else {
+                count += 1;
+                min = Some(b);
             }
         }
     }
