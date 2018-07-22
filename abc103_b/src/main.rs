@@ -75,9 +75,12 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(a:#)(b:#));
+    let mut a = a.chars().collect::<Vec<_>>();
+    a.sort();
+    let mut b = b.chars().collect::<Vec<_>>();
+    b.sort();
+    if a == b { "Yes" } else { "No" }.to_string()
 }
 
 macro_rules! tests {
@@ -94,9 +97,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "kyoto\ntokyo" => "Yes",
+    test2: "abc\narc" => "No",
+    test3: "aaaaaaaaaaaaaaab\naaaaaaaaaaaaaaab" => "Yes",
 }
