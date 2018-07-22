@@ -75,9 +75,8 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(n:usize)(list:[i64]));
+    list.into_iter().map(|x| x - 1).sum::<i64>().to_string()
 }
 
 macro_rules! tests {
@@ -94,9 +93,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "3\n3 4 6" => "10",
+    test2: "5\n7 46 11 20 11" => "90",
+    test3: "7\n994 518 941 851 647 2 581" => "4527",
 }
