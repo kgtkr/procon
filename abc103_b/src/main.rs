@@ -76,11 +76,25 @@ fn main() {
 
 fn solve(input: String) -> String {
     input!(input=>(a:#)(b:#));
-    let mut a = a.chars().collect::<Vec<_>>();
-    a.sort();
-    let mut b = b.chars().collect::<Vec<_>>();
-    b.sort();
-    if a == b { "Yes" } else { "No" }.to_string()
+    let a = a.chars().collect::<Vec<_>>();
+    let b = b.chars().collect::<Vec<_>>();
+    let len = a.len();
+    if a.len() != b.len() {
+        return "No".to_string();
+    } else {
+        for i in 0..a.len() {
+            //aの後ろi個を先頭に
+            if a.clone()
+                .into_iter()
+                .skip(len - i)
+                .chain(a.clone().into_iter().take(len - i))
+                .collect::<Vec<_>>() == b
+            {
+                return "Yes".to_string();
+            }
+        }
+        return "No".to_string();
+    }
 }
 
 macro_rules! tests {
