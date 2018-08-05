@@ -74,9 +74,25 @@ fn main() {
     println!("{}", output);
 }
 
+#[derive(Debug, Clone, Copy)]
+enum Type {
+    A,
+    B,
+    C,
+    Q,
+}
+
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
+    input!(input=>(s:#));
+    let list = s
+        .chars()
+        .map(|x| match x {
+            'A' => Type::A,
+            'B' => Type::B,
+            'C' => Type::C,
+            _ => Type::Q,
+        })
+        .collect::<Vec<_>>();
     n.to_string()
 }
 
@@ -94,9 +110,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "A??C" => "8",
+    test2: "ABCBC" => "3",
+    test3: "????C?????B??????A???????" => "979596887",
 }
