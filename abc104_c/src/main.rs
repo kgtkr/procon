@@ -75,9 +75,36 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(d:usize g:i64){d;list:(i64,i64)});
+    let mut v = list
+        .into_iter()
+        .enumerate()
+        .map(|(a, (b, c))| ((a as i64) + 1, b, c))
+        .collect::<Vec<_>>();
+    v.reverse();
+    f(g, &v, 0, 0, 0).to_string()
+}
+
+fn f(g: i64, list: &Vec<(i64, i64, i64)>, sum: i64, i: usize, count: i64) -> i64 {
+    if sum >= g {
+        count
+    } else if i == list.len() {
+        <i64>::max_value()
+    } else {
+        std::cmp::min(f(g, list, sum, i + 1, count), {
+            let (a, b, c) = list[i];
+            if a * b * 100 + sum >= g {
+                let x = div2(g - sum, a * 100);
+                f(g, list, sum + x * a * 100, i + 1, count + x)
+            } else {
+                f(g, list, sum + a * b * 100 + c, i + 1, count + b)
+            }
+        })
+    }
+}
+
+fn div2(a: i64, b: i64) -> i64 {
+    (a + (b - 1)) / b
 }
 
 macro_rules! tests {
@@ -94,9 +121,8 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "2 700\n3 500\n5 800" => "3",
+    test2: "2 2000\n3 500\n5 800" => "7",
+    test3: "2 400\n3 500\n5 800" => "2",
+    test4: "5 25000\n20 1000\n40 1000\n50 1000\n30 1000\n1 1000" => "66",
 }
