@@ -75,9 +75,28 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(s:#));
+    let s = s.chars().collect::<Vec<_>>();
+    let b1 = s[0] == 'A';
+    let b2 = {
+        let mut count = 0;
+        for i in 2..s.len() - 1 {
+            if s[i] == 'C' {
+                count += 1;
+            }
+        }
+        count == 1
+    };
+    let b3 = {
+        let mut count = 0;
+        for c in s {
+            if 'A' <= c && c <= 'Z' {
+                count += 1;
+            }
+        }
+        count == 2
+    };
+    if b1 && b2 && b3 { "AC" } else { "WA" }.to_string()
 }
 
 macro_rules! tests {
@@ -94,9 +113,9 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "AtCoder" => "AC",
+    test2: "ACoder" => "WA",
+    test3: "AcycliC" => "WA",
+    test4: "AtCoCo" => "WA",
+    test5: "Atcoder" => "WA",
 }
