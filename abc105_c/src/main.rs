@@ -77,9 +77,34 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(n:i64));
+    if n == 0 {
+        "0".to_string()
+    } else {
+        /*let mut decimal = n;
+        let mut binary = String::new();
+        let mut base = 1;
+        while decimal > 0 {
+            binary.push_str(&((decimal % 2) * base).to_string());
+            decimal = decimal / 2;
+            base *= 10;
+        }*/
+
+        let mut n = n;
+        let mut s = Vec::new();
+        while n != 0 {
+            if n % 2 == 0 {
+                s.push('0');
+                n = n / -2;
+            } else {
+                s.push('1');
+                n = (n - 1) / -2;
+            }
+        }
+
+        s.reverse();
+        s.into_iter().collect::<String>()
+    }
 }
 
 macro_rules! tests {
@@ -96,9 +121,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "-9" => "1011",
+    test2: "123456789" => "11000101011001101110100010101",
+    test3: "0" => "0",
 }
