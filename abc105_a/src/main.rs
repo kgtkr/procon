@@ -77,9 +77,8 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(n:i64 k:i64));
+    if n % k == 0 { 0 } else { 1 }.to_string()
 }
 
 macro_rules! tests {
@@ -94,11 +93,8 @@ macro_rules! tests {
         }
     }
 }
-
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "7 3" => "1",
+    test2: "100 10" => "0",
+    test3: "1 1" => "0",
 }
