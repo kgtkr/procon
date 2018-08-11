@@ -81,15 +81,6 @@ fn solve(input: String) -> String {
     if n == 0 {
         "0".to_string()
     } else {
-        /*let mut decimal = n;
-        let mut binary = String::new();
-        let mut base = 1;
-        while decimal > 0 {
-            binary.push_str(&((decimal % 2) * base).to_string());
-            decimal = decimal / 2;
-            base *= 10;
-        }*/
-
         let mut n = n;
         let mut s = Vec::new();
         while n != 0 {
