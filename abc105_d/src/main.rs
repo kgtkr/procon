@@ -1,4 +1,5 @@
 extern crate core;
+use std::collections::HashMap;
 
 use std::io::{self, Read};
 
@@ -78,23 +79,29 @@ fn main() {
 
 fn solve(input: String) -> String {
     input!(input=>(n:usize m:i64)(list:[i64]));
-    let sum_list = sum_seq(list.clone());
-    let msum_list = sum_seq(
-        sum_list
-            .into_iter()
-            .map(|x| if x % m == 0 { 1 } else { 0 })
-            .collect(),
-    );
-    n.to_string()
-}
-
-pub fn sum_seq(v: Vec<i64>) -> Vec<i64> {
-    v.into_iter()
+    let mut sum = 0;
+    let mut map = HashMap::new();
+    for x in list
+        .into_iter()
         .scan(0, |state, x| {
             *state = *state + x;
             Some(*state)
         })
-        .collect()
+        .map(|x| x % m)
+    {
+        let v = map.get(&x).cloned().unwrap_or(0);
+        sum += if x == 0 { v + 1 } else { v };
+        map_add(&mut map, x, 1);
+    }
+    sum.to_string()
+}
+
+pub fn map_add(map: &mut HashMap<i64, i64>, key: i64, add: i64) {
+    let v = match map.get(&key) {
+        Some(v) => *v + add,
+        None => add,
+    };
+    map.insert(key, v);
 }
 
 macro_rules! tests {
@@ -111,9 +118,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "3 2\n4 1 5" => "3",
+    test2: "13 17\n29 7 5 7 9 51 7 13 8 55 42 9 81" => "6",
+    test3: "10 400000000\n1000000000 1000000000 1000000000 1000000000 1000000000 1000000000 1000000000 1000000000 1000000000 1000000000" => "25",
 }
