@@ -1,10 +1,7 @@
 module Main where
 
 main :: IO ()
-main = do
-    n <- readLn
-    let s = f "" n
-    putStrLn $ s
+main = readLn >>= (putStrLn . f "")
 
 f :: String -> Int -> String
 f "" 0 = "0"
