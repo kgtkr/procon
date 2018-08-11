@@ -77,9 +77,24 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
+    input!(input=>(n:usize m:i64)(list:[i64]));
+    let sum_list = sum_seq(list.clone());
+    let msum_list = sum_seq(
+        sum_list
+            .into_iter()
+            .map(|x| if x % m == 0 { 1 } else { 0 })
+            .collect(),
+    );
     n.to_string()
+}
+
+pub fn sum_seq(v: Vec<i64>) -> Vec<i64> {
+    v.into_iter()
+        .scan(0, |state, x| {
+            *state = *state + x;
+            Some(*state)
+        })
+        .collect()
 }
 
 macro_rules! tests {
