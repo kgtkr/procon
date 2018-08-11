@@ -77,9 +77,14 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(n:i64));
+    for i in 0..26 {
+        let x = n - i * 4;
+        if x >= 0 && x % 7 == 0 {
+            return "Yes".to_string();
+        }
+    }
+    return "No".to_string();
 }
 
 macro_rules! tests {
@@ -96,9 +101,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "11" => "Yes",
+    test2: "40" => "Yes",
+    test3: "3" => "No",
 }
