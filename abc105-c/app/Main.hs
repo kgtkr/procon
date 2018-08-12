@@ -1,10 +1,8 @@
-module Main where
-
 main :: IO ()
-main = readLn >>= (putStrLn . f "")
+main = readLn >>= putStrLn . f ""
 
 f :: String -> Int -> String
 f "" 0 = "0"
 f s  0 = s
-f s n | n `mod` 2 == 0 = f ('0' : s) (n `div` (-2))
-      | otherwise      = f ('1' : s) ((n - 1) `div` (-2))
+f s n | n `mod` 2 == 0 = f ('0' : s) $ n `div` (-2)
+      | otherwise      = f ('1' : s) $ (n - 1) `div` (-2)
