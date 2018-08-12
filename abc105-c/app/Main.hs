@@ -4,5 +4,4 @@ main = readLn >>= putStrLn . f ""
 f :: String -> Int -> String
 f "" 0 = "0"
 f s  0 = s
-f s n | even n    = f ('0' : s) $ n `div` (-2)
-      | otherwise = f ('1' : s) $ (n - 1) `div` (-2)
+f s  n = f (show r ++ s) $ (r - n) `div` 2 where r = abs n `mod` 2
