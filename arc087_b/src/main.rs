@@ -84,12 +84,20 @@ enum Cmd {
 
 fn solve(input: String) -> String {
     input!(input=>(s:#)(target:(i64,i64)));
+    let mut init_x = 0;
+    for c in s.clone().chars() {
+        if c == 'F' {
+            init_x += 1;
+        } else {
+            break;
+        }
+    }
     let (xlist, ylist) = {
         let list = {
             let mut vec = Vec::new();
             let mut old = 'X';
             let mut count = 0;
-            for x in s.chars() {
+            for x in s.chars().skip(init_x) {
                 if old == x {
                     count += 1;
                 } else {
@@ -142,7 +150,7 @@ fn solve(input: String) -> String {
         v
     });
 
-    let xb = f(&xlist, target.0, 0, 0, &mut dp.clone());
+    let xb = f(&xlist, target.0, 0, init_x as i64, &mut dp.clone());
     let yb = f(&ylist, target.1, 0, 0, &mut dp);
 
     if xb && yb { "Yes" } else { "No" }.to_string()
