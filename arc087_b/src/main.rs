@@ -149,14 +149,15 @@ fn solve(input: String) -> String {
 }
 
 fn f(list: &Vec<i64>, target: i64, i: usize, point: i64, dp: &mut Vec<Vec<Option<bool>>>) -> bool {
+    let index = (point + 8000) as usize;
     if list.len() == i {
         target == point
-    } else if let Some(b) = dp[i][(point + 8000) as usize] {
+    } else if let Some(b) = dp[i][index] {
         b
     } else {
         let b = f(list, target, i + 1, point + list[i], dp)
             || f(list, target, i + 1, point - list[i], dp);
-        dp[i][(point + 8000) as usize] = Some(b);
+        dp[i][index] = Some(b);
         b
     }
 }
