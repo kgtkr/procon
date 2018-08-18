@@ -1,0 +1,6 @@
+[package]
+name = "abc106_a"
+version = "0.1.0"
+authors = ["kgtkr <kgtkr.jp@gmail.com>"]
+
+[dependencies]
