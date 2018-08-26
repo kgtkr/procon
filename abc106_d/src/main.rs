@@ -135,43 +135,6 @@ macro_rules! tests {
     }
 }
 
-//vecは昇順ソート済み
-//以上
-pub fn lower_bound<T: Ord>(vec: &Vec<T>, mut first: usize, mut last: usize, val: &T) -> usize {
-    let mut mid;
-    while last - first > 1 {
-        mid = (first + last) / 2;
-        if &vec[mid] < val {
-            first = mid;
-        } else {
-            last = mid;
-        }
-    }
-    if &vec[first] < val {
-        last
-    } else {
-        first
-    }
-}
-
-//より大きい
-pub fn upper_bound<T: Ord>(vec: &Vec<T>, mut first: usize, mut last: usize, val: &T) -> usize {
-    let mut mid;
-    while last - first > 1 {
-        mid = (first + last) / 2;
-        if &vec[mid] <= val {
-            first = mid;
-        } else {
-            last = mid;
-        }
-    }
-    if &vec[first] <= val {
-        last
-    } else {
-        first
-    }
-}
-
 tests! {
     test1: "2 3 1\n1 1\n1 2\n2 2\n1 2" => "3",
     test2: "10 3 2\n1 5\n2 8\n7 10\n1 7\n3 10" => "1\n1",
