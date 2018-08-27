@@ -107,11 +107,11 @@ fn solve(input: String) -> String {
     let mut res = Vec::new();
     for (l, r) in query {
         res.push(
-            map_sum[r][r] - if l != 0 {
-                map_sum[l - 1][l - 1] + map_sum[l - 1][r] + map_sum[r][l - 1]
+            map_sum[r][r] - (if l != 0 {
+                -map_sum[l - 1][l - 1] + map_sum[l - 1][r] + map_sum[r][l - 1]
             } else {
                 0
-            },
+            }),
         )
     }
 
