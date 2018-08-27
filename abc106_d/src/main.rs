@@ -90,29 +90,11 @@ fn solve(input: String) -> String {
         map[x][y] += 1;
     }
 
-    let mut map_sum = map;
-
-    for i in 0..n {
-        for j in 0..n {
-            map_sum[i][j] += if j != 0 { map_sum[i][j - 1] } else { 0 };
-        }
-    }
-
-    for i in 0..n {
-        for j in 0..n {
-            map_sum[i][j] += if i != 0 { map_sum[i - 1][j] } else { 0 };
-        }
-    }
+    let map_sum = sum_seq_2d(map);
 
     let mut res = Vec::new();
     for (l, r) in query {
-        res.push(
-            map_sum[r][r] - (if l != 0 {
-                -map_sum[l - 1][l - 1] + map_sum[l - 1][r] + map_sum[r][l - 1]
-            } else {
-                0
-            }),
-        )
+        res.push(sum_seq_2d_rect(&map_sum, (l, l), (r, r)))
     }
 
     res.into_iter()
@@ -120,6 +102,38 @@ fn solve(input: String) -> String {
         .collect::<Vec<_>>()
         .join("\n")
         .to_string()
+}
+
+pub fn sum_seq_2d(mut vec: Vec<Vec<i64>>) -> Vec<Vec<i64>> {
+    for i in 0..vec.len() {
+        for j in 0..vec[0].len() {
+            vec[i][j] += if j != 0 { vec[i][j - 1] } else { 0 };
+        }
+    }
+
+    for i in 0..vec.len() {
+        for j in 0..vec[0].len() {
+            vec[i][j] += if i != 0 { vec[i - 1][j] } else { 0 };
+        }
+    }
+
+    vec
+}
+
+pub fn sum_seq_2d_rect(
+    sum_vec: &Vec<Vec<i64>>,
+    (x1, y1): (usize, usize),
+    (x2, y2): (usize, usize),
+) -> i64 {
+    sum_vec[x2][y2] + (if x1 != 0 && y1 != 0 {
+        sum_vec[x1 - 1][y1 - 1]
+    } else {
+        0
+    }) - (if x1 != 0 { sum_vec[x1 - 1][y2] } else { 0 }) - (if y1 != 0 {
+        sum_vec[x2][y1 - 1]
+    } else {
+        0
+    })
 }
 
 macro_rules! tests {
