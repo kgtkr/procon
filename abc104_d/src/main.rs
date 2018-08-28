@@ -96,28 +96,52 @@ fn solve(input: String) -> String {
 
     list.reverse();
 
+    let q_count = list.clone().into_iter().filter(|&x| x == Type::Q).count();
+    let mut q_count_pow_mod = 1;
+    for _ in 0..q_count {
+        q_count_pow_mod = mul(q_count_pow_mod, 3);
+    }
+
     let mut a = 0i64;
     let mut b = 0i64;
-    let mut c = 3_i64.pow(list.clone().into_iter().filter(|&x| x == Type::Q).count() as u32);
+    let mut c = 0i64;
     for x in list {
         match x {
-            Type::A => {
-                a += b;
-            }
-            Type::B => {
-                b += c;
-            }
-            Type::C => {
-                c += 1;
-            }
+            Type::A => a = add(a, b),
+            Type::B => b = add(b, c),
+            Type::C => c = add(c, q_count_pow_mod),
             Type::Q => {
-                a += b / 3;
-                b += c / 3;
-                c += 3;
+                a += div(b, 3);
+                b += div(c, 3);
+                c += div(q_count_pow_mod, 3);
             }
         }
     }
-    a.to_string()
+    (a % 1000000007).to_string()
+}
+
+fn power(x: i64, y: i64) -> i64 {
+    if y == 0 {
+        1
+    } else if y == 1 {
+        x % 1000000007
+    } else if y % 2 == 0 {
+        power(x, y / 2).pow(2) % 1000000007
+    } else {
+        power(x, y / 2).pow(2) * x % 1000000007
+    }
+}
+
+fn div(a: i64, b: i64) -> i64 {
+    mul(a, power(b, 1000000007 - 2))
+}
+
+fn add(a: i64, b: i64) -> i64 {
+    (a + b) % 1000000007
+}
+
+fn mul(a: i64, b: i64) -> i64 {
+    ((a % 1000000007) * (b % 1000000007)) % 1000000007
 }
 
 macro_rules! tests {
@@ -137,4 +161,5 @@ tests! {
     test1: "A??C" => "8",
     test2: "ABCBC" => "3",
     test3: "????C?????B??????A???????" => "979596887",
+    test_add1:"A?C"=>"1",
 }
