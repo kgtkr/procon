@@ -74,7 +74,7 @@ fn main() {
     println!("{}", output);
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 enum Type {
     A,
     B,
@@ -84,7 +84,7 @@ enum Type {
 
 fn solve(input: String) -> String {
     input!(input=>(s:#));
-    let list = s
+    let mut list = s
         .chars()
         .map(|x| match x {
             'A' => Type::A,
@@ -93,7 +93,31 @@ fn solve(input: String) -> String {
             _ => Type::Q,
         })
         .collect::<Vec<_>>();
-    n.to_string()
+
+    list.reverse();
+
+    let mut a = 0i64;
+    let mut b = 0i64;
+    let mut c = 3_i64.pow(list.clone().into_iter().filter(|&x| x == Type::Q).count() as u32);
+    for x in list {
+        match x {
+            Type::A => {
+                a += b;
+            }
+            Type::B => {
+                b += c;
+            }
+            Type::C => {
+                c += 1;
+            }
+            Type::Q => {
+                a += b / 3;
+                b += c / 3;
+                c += 3;
+            }
+        }
+    }
+    a.to_string()
 }
 
 macro_rules! tests {
