@@ -74,29 +74,12 @@ fn main() {
     println!("{}", output);
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
-enum Type {
-    A,
-    B,
-    C,
-    Q,
-}
-
 fn solve(input: String) -> String {
     input!(input=>(s:#));
-    let mut list = s
-        .chars()
-        .map(|x| match x {
-            'A' => Type::A,
-            'B' => Type::B,
-            'C' => Type::C,
-            _ => Type::Q,
-        })
-        .collect::<Vec<_>>();
-
+    let mut list = s.chars().collect::<Vec<_>>();
     list.reverse();
 
-    let q_count = list.clone().into_iter().filter(|&x| x == Type::Q).count();
+    let q_count = list.clone().into_iter().filter(|&x| x == '?').count();
     let mut q_count_pow_mod = 1;
     for _ in 0..q_count {
         q_count_pow_mod = mul(q_count_pow_mod, 3);
@@ -107,41 +90,44 @@ fn solve(input: String) -> String {
     let mut c = 0i64;
     for x in list {
         match x {
-            Type::A => a = add(a, b),
-            Type::B => b = add(b, c),
-            Type::C => c = add(c, q_count_pow_mod),
-            Type::Q => {
-                a += div(b, 3);
-                b += div(c, 3);
-                c += div(q_count_pow_mod, 3);
+            'A' => a = add(a, b),
+            'B' => b = add(b, c),
+            'C' => c = add(c, q_count_pow_mod),
+            '?' => {
+                a = add(a, div(b, 3));
+                b = add(b, div(c, 3));
+                c = add(c, div(q_count_pow_mod, 3));
             }
+            _ => unreachable!(),
         }
     }
-    (a % 1000000007).to_string()
+    a.to_string()
 }
+
+const mo: i64 = 1000000007;
 
 fn power(x: i64, y: i64) -> i64 {
     if y == 0 {
         1
     } else if y == 1 {
-        x % 1000000007
+        x % mo
     } else if y % 2 == 0 {
-        power(x, y / 2).pow(2) % 1000000007
+        power(x, y / 2).pow(2) % mo
     } else {
-        power(x, y / 2).pow(2) * x % 1000000007
+        power(x, y / 2).pow(2) * x % mo
     }
 }
 
 fn div(a: i64, b: i64) -> i64 {
-    mul(a, power(b, 1000000007 - 2))
+    mul(a, power(b, mo - 2))
 }
 
 fn add(a: i64, b: i64) -> i64 {
-    (a + b) % 1000000007
+    (a + b) % mo
 }
 
 fn mul(a: i64, b: i64) -> i64 {
-    ((a % 1000000007) * (b % 1000000007)) % 1000000007
+    ((a % mo) * (b % mo)) % mo
 }
 
 macro_rules! tests {
