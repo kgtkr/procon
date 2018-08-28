@@ -104,30 +104,30 @@ fn solve(input: String) -> String {
     a.to_string()
 }
 
-const mo: i64 = 1000000007;
+const MOD: i64 = 1000000007;
 
 fn power(x: i64, y: i64) -> i64 {
     if y == 0 {
         1
     } else if y == 1 {
-        x % mo
+        x % MOD
     } else if y % 2 == 0 {
-        power(x, y / 2).pow(2) % mo
+        power(x, y / 2).pow(2) % MOD
     } else {
-        power(x, y / 2).pow(2) * x % mo
+        power(x, y / 2).pow(2) * x % MOD
     }
 }
 
 fn div(a: i64, b: i64) -> i64 {
-    mul(a, power(b, mo - 2))
+    mul(a, power(b, MOD - 2))
 }
 
 fn add(a: i64, b: i64) -> i64 {
-    (a + b) % mo
+    (a + b) % MOD
 }
 
 fn mul(a: i64, b: i64) -> i64 {
-    ((a % mo) * (b % mo)) % mo
+    ((a % MOD) * (b % MOD)) % MOD
 }
 
 macro_rules! tests {
