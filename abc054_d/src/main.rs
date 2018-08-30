@@ -80,6 +80,8 @@ fn solve(input: String) -> String {
     input!(input=>(n:usize ma:i64 mb:i64){n;list:(i64,i64,i64)});
     let x = f(&list, ma, mb, 0, 0, 0, 0);
     if x == <i64>::max_value() { -1 } else { x }.to_string()
+    //km-knを何個作成可能か
+    //n*ai、n*biは最大400
 }
 
 fn f(list: &Vec<(i64, i64, i64)>, ma: i64, mb: i64, i: usize, a: i64, b: i64, c: i64) -> i64 {
