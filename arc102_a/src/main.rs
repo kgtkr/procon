@@ -77,26 +77,15 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(n:usize ma:i64 mb:i64){n;list:(i64,i64,i64)});
-    let x = f(&list, ma, mb, 0, 0, 0, 0);
-    if x == i64::max_value() { -1 } else { x }.to_string()
-    //km-knを何個作成可能か
-    //n*ai、n*biは最大400
-}
-
-const INF: i64 = 10000;
-
-fn f(list: &Vec<(i64, i64, i64)>, ma: i64, mb: i64, i: usize, a: usize, b: usize) -> i64 {
-    if i == 0 {
-        if a == 0 && b == 0 {
-            0
-        } else {
-            INF
-        }
+    input!(input=>(n:i64 k:i64));
+    if k % 2 != 0 {
+        let x = n / k;
+        x * x * x
     } else {
-        //: dp[i][ca][cb] = min(dp[i][ca][cb], dp[i-1][ca][cb])
-
-    }
+        let c = n / k;
+        let d = n / k + if n % k >= k / 2 { 1 } else { 0 };
+        c * c * c + d * d * d
+    }.to_string()
 }
 
 macro_rules! tests {
@@ -113,6 +102,8 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 1 1\n1 2 1\n2 1 2\n3 3 10" => "3",
-    test2: "1 1 10\n10 10 10" => "-1",
+    test1: "3 2" => "9",
+    test2: "5 3" => "1",
+    test3: "31415 9265" => "27",
+    test4: "35897 932" => "114191",
 }
