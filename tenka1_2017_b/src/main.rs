@@ -79,8 +79,8 @@ fn main() {
 fn solve(input: String) -> String {
     input!(input=>(n:usize){n;list:(i64,i64)});
     list.into_iter()
-        .max_by_key(|x| x.0)
-        .map(|x| x.0 + x.1)
+        .max_by_key(|&(a, _)| a)
+        .map(|(a, b)| a + b)
         .unwrap()
         .to_string()
 }
