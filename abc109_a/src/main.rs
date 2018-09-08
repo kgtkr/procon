@@ -78,8 +78,11 @@ fn main() {
 
 fn solve(input: String) -> String {
     input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    if a % 2 != 0 && b % 2 != 0 {
+        "Yes"
+    } else {
+        "No"
+    }.to_string()
 }
 
 macro_rules! tests {
@@ -96,9 +99,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "3 1" => "Yes",
+    test2: "1 2" => "No",
+    test3: "2 2" => "No",
 }
