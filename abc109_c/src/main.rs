@@ -77,9 +77,13 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(n:usize x:i64)(list:[i64]));
+    let list = list.into_iter().map(|i| (i - x).abs()).collect::<Vec<_>>();
+    let mut res = list[0];
+    for x in list {
+        res = gcd(std::cmp::max(res, x), std::cmp::min(res, x));
+    }
+    res.to_string()
 }
 
 macro_rules! tests {
@@ -95,10 +99,16 @@ macro_rules! tests {
     }
 }
 
+fn gcd(a: i64, b: i64) -> i64 {
+    if b == 0 {
+        a
+    } else {
+        gcd(b, a % b)
+    }
+}
+
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "3 3\n1 7 11" => "2",
+    test2: "3 81\n33 105 57" => "24",
+    test3: "1 1\n1000000000" => "999999999",
 }
