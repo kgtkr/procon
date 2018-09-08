@@ -77,9 +77,36 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(h:usize w:usize){h;list:[i64]});
+    let mut res = Vec::new();
+    let mut list = list;
+    for i in 0..h {
+        for j in 0..w {
+            if j != w - 1 {
+                //奇数なら右側に移動
+                if list[i][j] % 2 != 0 {
+                    list[i][j] -= 1;
+                    list[i][j + 1] += 1;
+                    res.push((i, j, i, j + 1));
+                }
+            } else {
+                if i != h - 1 {
+                    //奇数なら下に移動
+                    if list[i][j] % 2 != 0 {
+                        list[i][j] -= 1;
+                        list[i + 1][j] += 1;
+                        res.push((i, j, i + 1, j));
+                    }
+                }
+            }
+        }
+    }
+    let n = res.len();
+    let res = res
+        .into_iter()
+        .map(|(a, b, c, d)| format!("{} {} {} {}\n", a + 1, b + 1, c + 1, d + 1))
+        .collect::<String>();
+    format!("{}\n{}", n, res).to_string()
 }
 
 macro_rules! tests {
@@ -96,9 +123,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "2 3\n1 2 3\n0 1 1" => "3\n2 2 2 3\n1 1 1 2\n1 3 1 2",
+    test2: "3 2\n1 0\n2 1\n1 0" => "3\n1 1 1 2\n1 2 2 2\n3 1 3 2",
+    test3: "1 5\n9 9 9 9 9" => "2\n1 1 1 2\n1 3 1 4",
 }
