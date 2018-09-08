@@ -1,5 +1,6 @@
 extern crate core;
 
+use std::collections::HashSet;
 use std::io::{self, Read};
 
 #[macro_export]
@@ -77,9 +78,28 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(n:usize){n;list:#});
+    let list = list
+        .into_iter()
+        .map(|x| x.chars().collect::<Vec<_>>())
+        .collect::<Vec<_>>();
+    let mut next = list[0][0];
+    let mut set = HashSet::new();
+    for x in list {
+        if x[0] != next {
+            return "No".to_string();
+        }
+
+        let len = x.len();
+        next = x[len - 1];
+
+        if set.contains(&x) {
+            return "No".to_string();
+        }
+
+        set.insert(x);
+    }
+    "Yes".to_string()
 }
 
 macro_rules! tests {
@@ -96,9 +116,8 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "4\nhoge\nenglish\nhoge\nenigma" => "No",
+    test2: "9\nbasic\nc\ncpp\nphp\npython\nnadesico\nocaml\nlua\nassembly" => "Yes",
+    test3: "8\na\naa\naaa\naaaa\naaaaa\naaaaaa\naaa\naaaaaaa" => "No",
+    test4: "3\nabc\narc\nagc" => "No",
 }
