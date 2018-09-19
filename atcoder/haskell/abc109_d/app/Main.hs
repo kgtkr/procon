@@ -1,29 +1,35 @@
 module Main where
 
 import           Control.Monad
+import Control.Monad.Writer
 
 main :: IO ()
 main = do
     [h, _] <- (map read . words) <$> getLine
     list   <- map (map read . words) <$> (replicateM h) getLine
-    let res1 = (map goRight . enumerate2d) list
-    let
-        result = concat
-            [(concatMap fst) res1, (fst . goRight . map (last . snd)) res1]
+    let (_,log)=runWriter (do
+        res<-(sequence . map goRight . enumerate2d) list
+        (goRight . map last) res
+        return ())
 
     putStr
-        $(unlines .((show . length) result :) . map ((unwords . map show) . (\((a, b), (c, d)) -> [a, b, c, d])))
-        result
+        $(unlines .((show . length) log :) . map ((unwords . map show) . (\((a, b), (c, d)) -> [a, b, c, d])))
+        log
 
 goRight
-    :: [((Int, Int), Int)] -> ([((Int, Int), (Int, Int))], [((Int, Int), Int)])
-goRight []  = ([], [])
-goRight [x] = ([], [x])
-goRight (a@(aPoint, aValue) : b@(bPoint, _) : xs) = if even aValue
-    then mapSnd (a :) (goRight (b : xs))
+    :: [((Int, Int), Int)] -> Writer [((Int, Int), (Int, Int))] [((Int, Int), Int)]
+goRight []  = return []
+goRight [x] = return [x]
+goRight (a@(aPoint, aValue) : b@(bPoint, _) : xs) = do
+    if even aValue then
+        do
+            res<-goRight (b : xs)
+            return $ a:res
     else
-        let (resMove, resMap) = goRight (mapSnd (+ 1) b : xs)
-        in  ((aPoint, bPoint) : resMove, mapSnd (subtract 1) a : resMap)
+        do
+            res<-goRight (mapSnd (+ 1) b : xs)
+            tell [(aPoint, bPoint)]
+            return $ mapSnd (subtract 1) a : res
 
 enumerate :: [a] -> [(Int, a)]
 enumerate = zip [1 ..]
@@ -40,3 +46,4 @@ mapFst = flip mapTuple id
 
 mapSnd :: (t2 -> b) -> (a, t2) -> (a, b)
 mapSnd = mapTuple id
+    
