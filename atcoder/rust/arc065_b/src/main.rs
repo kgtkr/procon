@@ -1,5 +1,6 @@
 extern crate core;
 
+use std::collections::HashMap;
 use std::io::{self, Read};
 
 #[macro_export]
@@ -78,36 +79,31 @@ fn main() {
 
 fn solve(input: String) -> String {
     input!(input=>(n:usize k:usize l:usize){k;k_list:(@,@)}{l;l_list:(@,@)});
-    f(n, &k_list, &l_list)
-        .into_iter()
-        .zip(f(n, &l_list, &k_list))
-        .map(|(a, b)| std::cmp::max(a, b).to_string())
-        .collect::<Vec<_>>()
-        .join(" ")
-        .to_string()
-}
-
-fn f(n: usize, k_list: &Vec<(usize, usize)>, l_list: &Vec<(usize, usize)>) -> Vec<i32> {
     let mut k_uf = UnionFind::new(n);
-    for &(a, b) in k_list {
+    for (a, b) in k_list {
         k_uf.unite(a, b);
     }
     let mut l_uf = UnionFind::new(n);
-    for &(a, b) in l_list {
-        if k_uf.same(a, b) {
-            l_uf.unite(a, b);
-        }
+    for (a, b) in l_list {
+        l_uf.unite(a, b);
     }
-    let mut count_vec = Vec::with_capacity(n);
-    count_vec.resize(n, 0);
+    let mut count_map = HashMap::new();
     for i in 0..n {
-        count_vec[l_uf.find(i)] += 1;
+        map_add(&mut count_map, (k_uf.find(i), l_uf.find(i)), 1);
     }
     let mut result = Vec::with_capacity(n);
     for i in 0..n {
-        result.push(count_vec[l_uf.find(i)]);
+        result.push(count_map[&(k_uf.find(i), l_uf.find(i))].to_string());
     }
-    result
+    result.join(" ").to_string()
+}
+
+pub fn map_add(map: &mut HashMap<(usize, usize), i64>, key: (usize, usize), add: i64) {
+    let v = match map.get(&key) {
+        Some(v) => *v + add,
+        None => add,
+    };
+    map.insert(key, v);
 }
 
 #[derive(PartialEq, Debug, Clone)]
