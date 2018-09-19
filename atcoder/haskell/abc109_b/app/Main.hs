@@ -1,11 +1,12 @@
 module Main where
 
 import           Data.List
+import           Control.Monad
 
 main :: IO ()
 main = do
-    n    <- readLn :: IO Int
-    list <- (sequence . take n . repeat) getLine
+    n    <- readLn
+    list <- replicateM n getLine
     putStr
         $ if (length . nub) list
              == length list
