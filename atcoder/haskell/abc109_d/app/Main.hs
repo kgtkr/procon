@@ -22,13 +22,13 @@ main = do
     return ()
 goRight
     :: [((Int, Int), Int)] -> ([((Int, Int), (Int, Int))], [((Int, Int), Int)])
-goRight []           = ([], [])
-goRight [x         ] = ([], [x])
-goRight (a : b : xs) = if (even . snd) a
+goRight []  = ([], [])
+goRight [x] = ([], [x])
+goRight (a@(aPoint, aValue) : b@(bPoint, _) : xs) = if even aValue
     then mapSnd (a :) (goRight (b : xs))
     else
-        let res = goRight (mapSnd (+ 1) b : xs)
-        in  ((fst a, fst b) : (fst res), mapSnd (subtract 1) a : (snd res))
+        let (resMove, resMap) = goRight (mapSnd (+ 1) b : xs)
+        in  ((aPoint, bPoint) : resMove, mapSnd (subtract 1) a : resMap)
 
 enumerate :: [a] -> [(Int, a)]
 enumerate = zip [1 ..]
