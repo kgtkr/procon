@@ -24,8 +24,8 @@ goRight
     :: [((Int, Int), Int)] -> ([((Int, Int), (Int, Int))], [((Int, Int), Int)])
 goRight []           = ([], [])
 goRight [x         ] = ([], [x])
-goRight (a : b : xs) = if even (snd a)
-    then let res = goRight (b : xs) in mapSnd (a :) res
+goRight (a : b : xs) = if (even . snd) a
+    then mapSnd (a :) (goRight (b : xs))
     else
         let res = goRight (mapSnd (+ 1) b : xs)
         in  ((fst a, fst b) : (fst res), mapSnd (subtract 1) a : (snd res))
