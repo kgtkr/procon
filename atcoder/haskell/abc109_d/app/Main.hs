@@ -11,8 +11,8 @@ main = do
     let res1    = (map goRight . enumerate2d) list
     let list2   = (map snd) res1
     let result1 = (concatMap fst) res1
-    let res2    = (map goRight . transpose) list2
-    let result2 = (concatMap fst) res2
+    let res2    = (goRight . map last) list2
+    let result2 = fst res2
     let result  = concat [result1, result2]
 
     putStr
