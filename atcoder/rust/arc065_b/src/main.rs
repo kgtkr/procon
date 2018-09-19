@@ -78,12 +78,22 @@ fn main() {
 
 fn solve(input: String) -> String {
     input!(input=>(n:usize k:usize l:usize){k;k_list:(@,@)}{l;l_list:(@,@)});
+    f(n, &k_list, &l_list)
+        .into_iter()
+        .zip(f(n, &l_list, &k_list))
+        .map(|(a, b)| std::cmp::max(a, b).to_string())
+        .collect::<Vec<_>>()
+        .join(" ")
+        .to_string()
+}
+
+fn f(n: usize, k_list: &Vec<(usize, usize)>, l_list: &Vec<(usize, usize)>) -> Vec<i32> {
     let mut k_uf = UnionFind::new(n);
-    for (a, b) in k_list {
+    for &(a, b) in k_list {
         k_uf.unite(a, b);
     }
     let mut l_uf = UnionFind::new(n);
-    for (a, b) in l_list {
+    for &(a, b) in l_list {
         if k_uf.same(a, b) {
             l_uf.unite(a, b);
         }
@@ -95,9 +105,9 @@ fn solve(input: String) -> String {
     }
     let mut result = Vec::with_capacity(n);
     for i in 0..n {
-        result.push(count_vec[l_uf.find(i)].to_string());
+        result.push(count_vec[l_uf.find(i)]);
     }
-    result.join(" ").to_string()
+    result
 }
 
 #[derive(PartialEq, Debug, Clone)]
