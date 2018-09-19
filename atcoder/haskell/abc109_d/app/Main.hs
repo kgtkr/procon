@@ -6,12 +6,10 @@ main :: IO ()
 main = do
     [h, _] <- (map read . words) <$> getLine :: IO [Int]
     list   <- map (map read . words) <$> (replicateM h) getLine :: IO [[Int]]
-    let res1    = (map goRight . enumerate2d) list
-    let list2   = (map snd) res1
-    let result1 = (concatMap fst) res1
-    let res2    = (goRight . map last) list2
-    let result2 = fst res2
-    let result  = concat [result1, result2]
+    let res1 = (map goRight . enumerate2d) list
+    let
+        result = concat
+            [(concatMap fst) res1, (fst . goRight . map (last . snd)) res1]
 
     putStr
         $ (unlines . (((show . length) result) :) . map
