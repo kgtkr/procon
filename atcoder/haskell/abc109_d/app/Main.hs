@@ -10,9 +10,9 @@ main = do
             [[Int]]
     let res1    = (map goRight . enumerate2d) list
     let list2   = (map snd) res1
-    let result1 = (flatten . map fst) res1
+    let result1 = (concat . map fst) res1
     let res2    = (map goRight . transpose) list2
-    let result2 = (flatten . map fst) res2
+    let result2 = (concat . map fst) res2
     let result  = concat [result1, result2]
 
     putStr
@@ -38,7 +38,3 @@ enumerate2d :: [[a]] -> [[((Int, Int), a)]]
 enumerate2d list =
     (map (\(y, a) -> (map (\(x, b) -> ((y, x), b)) . enumerate) a) . enumerate)
         list
-
-flatten :: [[a]] -> [a]
-flatten []       = []
-flatten (x : xs) = x ++ flatten xs
