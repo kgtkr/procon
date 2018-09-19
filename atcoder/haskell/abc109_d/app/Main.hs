@@ -4,18 +4,16 @@ import           Control.Monad
 
 main :: IO ()
 main = do
-    [h, _] <- (map read . words) <$> getLine :: IO [Int]
-    list   <- map (map read . words) <$> (replicateM h) getLine :: IO [[Int]]
+    [h, _] <- (map read . words) <$> getLine
+    list   <- map (map read . words) <$> (replicateM h) getLine
     let res1 = (map goRight . enumerate2d) list
     let
         result = concat
             [(concatMap fst) res1, (fst . goRight . map (last . snd)) res1]
 
     putStr
-        $ (unlines . (((show . length) result) :) . map
-              ((unwords . map show) . (\((a, b), (c, d)) -> [a, b, c, d]))
-          )
-              result
+        $(unlines .((show . length) result :) . map ((unwords . map show) . (\((a, b), (c, d)) -> [a, b, c, d])))
+        result
 
     return ()
 goRight
