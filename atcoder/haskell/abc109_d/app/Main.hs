@@ -15,7 +15,6 @@ main = do
         $(unlines .((show . length) result :) . map ((unwords . map show) . (\((a, b), (c, d)) -> [a, b, c, d])))
         result
 
-    return ()
 goRight
     :: [((Int, Int), Int)] -> ([((Int, Int), (Int, Int))], [((Int, Int), Int)])
 goRight []  = ([], [])
