@@ -14,7 +14,6 @@ fromDiffList (DiffList f) = f []
 instance Monoid (DiffList a) where  
     mempty = DiffList (\xs -> [] ++ xs)
     (DiffList f) `mappend` (DiffList g) = DiffList (\xs -> f (g xs))
-    
 
 main :: IO ()
 main = do
