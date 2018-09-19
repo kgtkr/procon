@@ -3,21 +3,34 @@ module Main where
 import           Control.Monad
 import Control.Monad.Writer
 
+
+newtype DiffList a = DiffList { getDiffList :: [a] -> [a] }  
+toDiffList :: [a] -> DiffList a  
+toDiffList xs = DiffList (xs++)  
+  
+fromDiffList :: DiffList a -> [a]  
+fromDiffList (DiffList f) = f []  
+
+instance Monoid (DiffList a) where  
+    mempty = DiffList (\xs -> [] ++ xs)  
+    (DiffList f) `mappend` (DiffList g) = DiffList (\xs -> f (g xs))  
+
 main :: IO ()
 main = do
     [h, _] <- (map read . words) <$> getLine
     list   <- map (map read . words) <$> (replicateM h) getLine
-    let (_,log)=runWriter (do
-        res<-(sequence . map goRight . enumerate2d) list
-        (goRight . map last) res
-        return ())
+    let w=do
+            res<-(sequence . map goRight . enumerate2d) list
+            (goRight . map last) res
+            return ()
+    let (_,log)=runWriter w
 
     putStr
-        $(unlines .((show . length) log :) . map ((unwords . map show) . (\((a, b), (c, d)) -> [a, b, c, d])))
+        $(unlines .((show . length .fromDiffList) log :) . map ((unwords . map show) . (\((a, b), (c, d)) -> [a, b, c, d])).fromDiffList)
         log
 
 goRight
-    :: [((Int, Int), Int)] -> Writer [((Int, Int), (Int, Int))] [((Int, Int), Int)]
+    :: [((Int, Int), Int)] -> Writer (DiffList ((Int, Int), (Int, Int))) [((Int, Int), Int)]
 goRight []  = return []
 goRight [x] = return [x]
 goRight (a@(aPoint, aValue) : b@(bPoint, _) : xs) = do
@@ -28,7 +41,7 @@ goRight (a@(aPoint, aValue) : b@(bPoint, _) : xs) = do
     else
         do
             res<-goRight (mapSnd (+ 1) b : xs)
-            tell [(aPoint, bPoint)]
+            tell $ toDiffList [(aPoint, bPoint)]
             return $ mapSnd (subtract 1) a : res
 
 enumerate :: [a] -> [(Int, a)]
