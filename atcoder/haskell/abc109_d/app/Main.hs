@@ -40,9 +40,9 @@ goRight (a@(aPoint, aValue) : b@(bPoint, _) : xs) = do
             return $ a:res
     else
         do
-            res<-goRight (mapSnd (+ 1) b : xs)
+            res<-goRight (fmap (+ 1) b : xs)
             tell $ toDiffList [(aPoint, bPoint)]
-            return $ mapSnd (subtract 1) a : res
+            return $ fmap (subtract 1) a : res
 
 enumerate :: [a] -> [(Int, a)]
 enumerate = zip [1 ..]
@@ -51,12 +51,4 @@ enumerate2d :: [[a]] -> [[((Int, Int), a)]]
 enumerate2d =
     (map (\(y, a) -> (map (\(x, b) -> ((y, x), b)) . enumerate) a) . enumerate)
 
-mapTuple :: (t1 -> a) -> (t2 -> b) -> (t1, t2) -> (a, b)
-mapTuple f1 f2 (a, b) = (f1 a, f2 b)
-
-mapFst :: (t1 -> a) -> (t1, b) -> (a, b)
-mapFst = flip mapTuple id
-
-mapSnd :: (t2 -> b) -> (a, t2) -> (a, b)
-mapSnd = mapTuple id
     
