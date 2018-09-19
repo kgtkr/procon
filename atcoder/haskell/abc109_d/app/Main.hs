@@ -13,7 +13,7 @@ main = do
 
     putStr
         $ (unlines . (((show . length) result) :) . map
-              (unwords . (\((a, b), (c, d)) -> (map show) [a, b, c, d]))
+              ((unwords . map show) . (\((a, b), (c, d)) -> [a, b, c, d]))
           )
               result
 
