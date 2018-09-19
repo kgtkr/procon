@@ -28,8 +28,8 @@ goRight list@[_         ] = ([], list)
 goRight (     a : b : xs) = if even (snd a)
     then let res = goRight (b : xs) in (fst res, a : (snd res))
     else
-        let res = goRight ((fst b, (snd b) + 1) : xs)
-        in  ((fst a, fst b) : (fst res), (fst a, (snd a) - 1) : (snd res))
+        let res = goRight (mapSnd (+ 1) b : xs)
+        in  ((fst a, fst b) : (fst res), mapSnd (subtract 1) a : (snd res))
 
 enumerate :: [a] -> [(Int, a)]
 enumerate = zip [1 ..]
@@ -38,3 +38,8 @@ enumerate2d :: [[a]] -> [[((Int, Int), a)]]
 enumerate2d list =
     (map (\(y, a) -> (map (\(x, b) -> ((y, x), b)) . enumerate) a) . enumerate)
         list
+
+mapTuple f1 f2 (a, b) = (f1 a, f2 b)
+
+mapFst f = mapTuple f id
+mapSnd f = mapTuple id f
