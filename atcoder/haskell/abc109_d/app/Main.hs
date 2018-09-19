@@ -1,11 +1,10 @@
 module Main where
 
-import           Data.List
 import           Control.Monad
 
 main :: IO ()
 main = do
-    [h, w] <- (map read . words) <$> getLine :: IO [Int]
+    [h, _] <- (map read . words) <$> getLine :: IO [Int]
     list   <- map (map read . words) <$> (replicateM h) getLine :: IO [[Int]]
     let res1    = (map goRight . enumerate2d) list
     let list2   = (map snd) res1
