@@ -1,7 +1,0 @@
-[package]
-name = "arc099_b_sub"
-version = "0.1.0"
-authors = ["tkr <kgtkr.jp@gmail.com>"]
-
-[dependencies]
-gust = "0.1.4"
