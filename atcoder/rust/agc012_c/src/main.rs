@@ -167,8 +167,19 @@ fn solve(input: String) -> String {
     format!("{}\n{}", len, res_str).to_string()
 }
 
-fn len_n2(n: i64) -> i64 {
-    2 * len_n(2 * n) + (0..n).map(|i| combi(n, n - i).pow(4)).sum::<i64>()
+fn len_n2(c: i64, n: i64) -> i64 {
+    fn f(i: i64, c: i64, n: i64) -> i64 {
+        if i == 1 {
+            len_n(2 * n)
+        } else {
+            combi(c, i)
+                * (1..n + 1)
+                    .map(|x| combi(n, x).pow(2 * i as u32))
+                    .sum::<i64>()
+        }
+    }
+
+    (1..c + 1).map(|x| f(x, c, n)).sum::<i64>()
 }
 
 fn len_n(n: i64) -> i64 {
