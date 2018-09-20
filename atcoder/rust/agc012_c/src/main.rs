@@ -104,58 +104,42 @@ fn solve(input: String) -> String {
     f'(n)=g(2,n)
     */
 
-    let table1 = (2..50 + 1)
-        .filter(|&x| x % 2 == 0)
-        .map(|x| len_n(x))
-        .enumerate()
-        .map(|(i, x)| ((i + 1) * 2, x, true))
+    let mut table = (1..20)
+        .flat_map(|c| {
+            let c = c;
+            (1..(20 / c))
+                .map(|n| (c, n, len_n2(c, n)))
+                .collect::<Vec<_>>()
+                .into_iter()
+        })
         .collect::<Vec<_>>();
 
-    let table2 = (1..15 + 1)
-        .map(|x| len_n2(x))
-        .enumerate()
-        .map(|(i, x)| (i + 1, x, false))
-        .collect::<Vec<_>>();
-
-    let mut table = table1.into_iter().chain(table2).collect::<Vec<_>>();
-    table.sort_by_key(|&(i, x, flag)| {
-        let len = if flag { i } else { i * 4 };
+    table.sort_by_key(|&(c, n, x)| {
+        let len = 2 * n * c;
         (x / len as i64, x)
     });
     table.reverse();
 
     println!("{:?}", table);
 
-    let mut n = n;
+    let mut now_n = n;
     let mut res = Vec::new();
-    let mut c = 1;
-    for (i, x, flag) in table {
-        while n >= x {
-            n -= x;
-            if flag {
-                for _ in 0..i {
-                    res.push(c);
+    let mut now_c = 1;
+    for (c, n, x) in table {
+        while now_n >= x {
+            now_n -= x;
+            for _ in 0..2 {
+                for z in 0..c {
+                    for _ in 0..n {
+                        res.push(now_c + z);
+                    }
                 }
-                c += 1;
-            } else {
-                for _ in 0..i {
-                    res.push(c);
-                }
-                for _ in 0..i {
-                    res.push(c + 1);
-                }
-                for _ in 0..i {
-                    res.push(c);
-                }
-                for _ in 0..i {
-                    res.push(c + 1);
-                }
-                c += 2;
             }
+            now_c += c;
         }
     }
 
-    println!("文字の種類:{} 文字列長:{}", c - 1, res.len());
+    println!("文字の種類:{} 文字列長:{}", now_c, res.len());
 
     let len = res.len();
     let res_str = res
