@@ -158,11 +158,12 @@ fn len_n2(c: i64, n: i64) -> i64 {
         if i == 1 {
             c * len_n(2 * n)
         } else {
-            //nから1〜n選ぶパターン数の合計
-            let count = (1..n + 1).map(|x| combi(n, x)).sum::<i64>();
-
             //文字種の選び方
-            combi(c, i) * (count * 2).pow(i as u32)
+            combi(c, i)
+                * (1..n + 1)
+                    .map(|x| combi(n, x).pow(2))
+                    .sum::<i64>()
+                    .pow(i as u32)
         }
     }
 
