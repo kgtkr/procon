@@ -85,6 +85,7 @@ fn solve(input: String) -> String {
         .map(|(i, x)| ((i + 1) * 2, x))
         .collect::<Vec<_>>();
     table.reverse();
+    println!("{:?}", table);
     let mut n = n;
     let mut result = Vec::new();
     for (i, x) in table {
@@ -93,6 +94,13 @@ fn solve(input: String) -> String {
             result.push(i);
         }
     }
+
+    println!(
+        "文字の種類:{} 文字列長:{} {:?}",
+        result.len(),
+        result.clone().into_iter().sum::<usize>(),
+        result
+    );
 
     let mut res = Vec::new();
     for (i, x) in result.into_iter().enumerate().map(|(i, x)| (i + 1, x)) {
@@ -109,7 +117,8 @@ fn solve(input: String) -> String {
         .collect::<Vec<_>>()
         .join(" ");
 
-    format!("{}\n{}", len, res_str).to_string()
+    //format!("{}\n{}", len, res_str).to_string()
+    1.to_string()
 }
 
 fn len_n(n: i64) -> i64 {
@@ -140,4 +149,5 @@ macro_rules! tests {
 tests! {
     test1: "7" => "4\n1 1 1 1",
     test2: "299" => "23\n32 11 11 73 45 8 11 83 83 8 45 32 32 10 100 73 32 83 45 73 32 11 10",
+    hoge:"1000000000000"=>"",
 }
