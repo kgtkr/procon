@@ -105,7 +105,10 @@ fn solve(input: String) -> String {
         .collect::<Vec<_>>();
 
     let mut table = table1.into_iter().chain(table2).collect::<Vec<_>>();
-    table.sort_by_key(|x| x.1);
+    table.sort_by_key(|&(i, x, flag)| {
+        let len = if flag { i } else { i * 4 };
+        (x / len as i64, x)
+    });
     table.reverse();
 
     println!("{:?}", table);
@@ -140,6 +143,10 @@ fn solve(input: String) -> String {
     }
 
     println!("文字の種類:{} 文字列長:{}", c - 1, res.len());
+
+    //aa
+    //abab
+    //abcabc
 
     let len = res.len();
     let res_str = res
