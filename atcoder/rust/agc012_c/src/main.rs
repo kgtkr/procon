@@ -119,7 +119,7 @@ fn solve(input: String) -> String {
     });
     table.reverse();
 
-    println!("{:?}", table);
+    //println!("{:?}", table);
 
     let mut now_n = n;
     let mut res = Vec::new();
@@ -153,12 +153,13 @@ fn solve(input: String) -> String {
 //aaabbbaaabbb
 fn len_n2(c: i64, n: i64) -> i64 {
     fn f(i: i64, c: i64, n: i64) -> i64 {
-        combi(c, i) * if i == 1 {
-            len_n(2 * n)
+        if i == 1 {
+            c * len_n(2 * n)
         } else {
-            (1..n + 1)
-                .map(|x| combi(n, x).pow(2 * i as u32))
-                .sum::<i64>()
+            combi(c, i)
+                * (1..n + 1)
+                    .map(|x| combi(n, x).pow(2 * i as u32))
+                    .sum::<i64>()
         }
     }
 
