@@ -120,7 +120,7 @@ fn solve(input: String) -> String {
     });
     table.reverse();
 
-    println!("{:?}", table);
+    //println!("{:?}", table);
 
     let mut now_n = n;
     let mut res = Vec::new();
@@ -139,7 +139,7 @@ fn solve(input: String) -> String {
         }
     }
 
-    println!("文字の種類:{} 文字列長:{}", now_c, res.len());
+    //println!("文字の種類:{} 文字列長:{}", now_c, res.len());
 
     let len = res.len();
     let res_str = res
@@ -194,5 +194,4 @@ macro_rules! tests {
 tests! {
     test1: "7" => "4\n1 1 1 1",
     test2: "299" => "23\n32 11 11 73 45 8 11 83 83 8 45 32 32 10 100 73 32 83 45 73 32 11 10",
-    hoge:"1000000000000"=>"",
 }
