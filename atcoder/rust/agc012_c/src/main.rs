@@ -88,7 +88,19 @@ fn solve(input: String) -> String {
     (文字列aをn回)(文字列bをn回)(文字列aをn回)(文字列bをn回)
     f'(n)=2f(2n)+α(n)
     α(n)=(nC(n-0))^4+(nC(n-1))^4+...+(nC(n-(n-1)))^4
-     */
+
+    aa c=1,n=1
+    abab c=2,n=1
+    abcabc c=3,n=1
+    aabbaabb c=2,n=2
+    g(c,n)=β(1,c,n)+β(2,c,n)..β(c,c,n)
+    β(i,c,n)=cCi((nC1)^2i+(nC2)^2i+...+(nCn)^2i)
+
+    f(2n)=g(1,n)
+    g(1,n)=β(1,1,n)=(nC1)^2+(nC2)^2+...+(nCn)^2
+
+    f'(n)=g(2,n)
+    */
 
     let table1 = (2..50 + 1)
         .filter(|&x| x % 2 == 0)
@@ -97,11 +109,10 @@ fn solve(input: String) -> String {
         .map(|(i, x)| ((i + 1) * 2, x, true))
         .collect::<Vec<_>>();
 
-    let table2 = (2..15 + 1)
-        .filter(|&x| x % 2 == 0)
+    let table2 = (1..15 + 1)
         .map(|x| len_n2(x))
         .enumerate()
-        .map(|(i, x)| ((i + 1) * 2, x, false))
+        .map(|(i, x)| (i + 1, x, false))
         .collect::<Vec<_>>();
 
     let mut table = table1.into_iter().chain(table2).collect::<Vec<_>>();
@@ -143,10 +154,6 @@ fn solve(input: String) -> String {
     }
 
     println!("文字の種類:{} 文字列長:{}", c - 1, res.len());
-
-    //aa
-    //abab
-    //abcabc
 
     let len = res.len();
     let res_str = res
