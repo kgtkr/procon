@@ -78,37 +78,68 @@ fn main() {
 
 fn solve(input: String) -> String {
     input!(input=>(n:i64));
-    let mut table = (2..50 + 1)
+
+    /*
+    nを2以上の偶数
+
+    繰り返さない場合
+    f(n)=nC(n-2*0)+nC(n-2*1)+nC(n-2*2)+...+nC(n-2*(n/2-1))
+
+    (文字列aをn回)(文字列bをn回)(文字列aをn回)(文字列bをn回)
+    f'(n)=2f(2n)+α(n)
+    α(n)=(nC(n-0))^4+(nC(n-1))^4+...+(nC(n-(n-1)))^4
+     */
+
+    let table1 = (2..50 + 1)
         .filter(|&x| x % 2 == 0)
         .map(|x| len_n(x))
         .enumerate()
-        .map(|(i, x)| ((i + 1) * 2, x))
+        .map(|(i, x)| ((i + 1) * 2, x, true))
         .collect::<Vec<_>>();
+
+    let table2 = (2..15 + 1)
+        .filter(|&x| x % 2 == 0)
+        .map(|x| len_n2(x))
+        .enumerate()
+        .map(|(i, x)| ((i + 1) * 2, x, false))
+        .collect::<Vec<_>>();
+
+    let mut table = table1.into_iter().chain(table2).collect::<Vec<_>>();
+    table.sort_by_key(|x| x.1);
     table.reverse();
+
     println!("{:?}", table);
+
     let mut n = n;
-    let mut result = Vec::new();
-    for (i, x) in table {
+    let mut res = Vec::new();
+    let mut c = 1;
+    for (i, x, flag) in table {
         while n >= x {
             n -= x;
-            result.push(i);
+            if flag {
+                for _ in 0..i {
+                    res.push(c);
+                }
+                c += 1;
+            } else {
+                for _ in 0..i {
+                    res.push(c);
+                }
+                for _ in 0..i {
+                    res.push(c + 1);
+                }
+                for _ in 0..i {
+                    res.push(c);
+                }
+                for _ in 0..i {
+                    res.push(c + 1);
+                }
+                c += 2;
+            }
         }
     }
 
-    println!(
-        "文字の種類:{} 文字列長:{} {:?}",
-        result.len(),
-        result.clone().into_iter().sum::<usize>(),
-        result
-    );
-
-    let mut res = Vec::new();
-    for (i, x) in result.into_iter().enumerate().map(|(i, x)| (i + 1, x)) {
-        //iをx個
-        for _ in 0..x {
-            res.push(i);
-        }
-    }
+    println!("文字の種類:{} 文字列長:{}", c - 1, res.len());
 
     let len = res.len();
     let res_str = res
@@ -117,8 +148,11 @@ fn solve(input: String) -> String {
         .collect::<Vec<_>>()
         .join(" ");
 
-    //format!("{}\n{}", len, res_str).to_string()
-    1.to_string()
+    format!("{}\n{}", len, res_str).to_string()
+}
+
+fn len_n2(n: i64) -> i64 {
+    2 * len_n(2 * n) + (0..n).map(|i| combi(n, n - i).pow(4)).sum::<i64>()
 }
 
 fn len_n(n: i64) -> i64 {
