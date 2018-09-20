@@ -162,7 +162,7 @@ fn len_n2(c: i64, n: i64) -> i64 {
             let count = (1..n + 1).map(|x| combi(n, x)).sum::<i64>();
 
             //文字種の選び方
-            combi(c, i) * count * i * 2
+            combi(c, i) * (count * 2).pow(i as u32)
         }
     }
 
