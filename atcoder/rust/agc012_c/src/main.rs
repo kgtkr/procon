@@ -94,7 +94,9 @@ fn solve(input: String) -> String {
     abcabc c=3,n=1
     aabbaabb c=2,n=2
     g(c,n)=β(1,c,n)+β(2,c,n)..β(c,c,n)
-    β(i,c,n)=cCi((nC1)^2i+(nC2)^2i+...+(nCn)^2i)
+    β(i,c,n)=
+        f(2n) (i==1)
+        cCi((nC1)^2i+(nC2)^2i+...+(nCn)^2i) (else)
 
     f(2n)=g(1,n)
     g(1,n)=β(1,1,n)=(nC1)^2+(nC2)^2+...+(nCn)^2
