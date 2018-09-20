@@ -151,15 +151,18 @@ fn solve(input: String) -> String {
 }
 
 //aaabbbaaabbb
+//1ブロックn文字、c種類の文字種から任意文字種選んで
 fn len_n2(c: i64, n: i64) -> i64 {
+    //1ブロックn文字、c種類の文字からなるやつからi文字種選んで
     fn f(i: i64, c: i64, n: i64) -> i64 {
         if i == 1 {
             c * len_n(2 * n)
         } else {
-            combi(c, i)
-                * (1..n + 1)
-                    .map(|x| combi(n, x).pow(2 * i as u32))
-                    .sum::<i64>()
+            //nから1〜n選ぶパターン数の合計
+            let count = (1..n + 1).map(|x| combi(n, x)).sum::<i64>();
+
+            //文字種の選び方
+            combi(c, i) * count * i * 2
         }
     }
 
