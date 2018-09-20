@@ -103,11 +103,13 @@ fn solve(input: String) -> String {
     f'(n)=g(2,n)
     */
 
-    let mut table = (1..20)
+    let inf = 1000000000000;
+
+    let mut table = (1..50)
         .flat_map(|c| {
-            let c = c;
-            (1..(20 / c))
+            (1..)
                 .map(|n| (c, n, len_n2(c, n)))
+                .take_while(|&(_, _, x)| x < inf)
                 .collect::<Vec<_>>()
                 .into_iter()
         })
@@ -198,4 +200,5 @@ macro_rules! tests {
 tests! {
     test1: "7" => "4\n1 1 1 1",
     test2: "299" => "23\n32 11 11 73 45 8 11 83 83 8 45 32 32 10 100 73 32 83 45 73 32 11 10",
+    uoooooo: "1000000000" => "23\n32 11 11 73 45 8 11 83 83 8 45 32 32 10 100 73 32 83 45 73 32 11 10",
 }
