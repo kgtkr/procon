@@ -124,33 +124,8 @@ fn solve(input: String) -> String {
         })
         .collect::<Vec<_>>();*/
 
-    fn a2b(a: u64, b: u64) -> Vec<(u64, u64)> {
-        (1..a + 1)
-            .flat_map(|x| (1..b + 1).map(|y| (x, y)).collect::<Vec<_>>())
-            .collect::<Vec<_>>()
-    }
+    let mut table = (2..50).map(|n| (n, len_n(n))).collect::<Vec<_>>();
 
-    let mut table = vec![
-        (50, 1),
-        (19, 2),
-        (11, 3),
-        (10, 3),
-        (8, 4),
-        (6, 5),
-        (5, 6),
-        (4, 7),
-        (3, 8),
-        (2, 14),
-        (1, 25),
-    ].into_iter()
-        .flat_map(|(a, b)| a2b(a, b))
-        .map(|(c, n)| (c, n, len_n2(c, n)))
-        .collect::<Vec<_>>();
-
-    table.sort_by_key(|&(c, n, x)| {
-        let len = 2 * n * c;
-        (x * 10000 / len as u64)
-    });
     table.reverse();
 
     //println!("{:?}", table);
@@ -158,17 +133,13 @@ fn solve(input: String) -> String {
     let mut now_n = n;
     let mut res = Vec::new();
     let mut now_c = 1;
-    for (c, n, x) in table {
+    for (n, x) in table {
         while now_n >= x {
             now_n -= x;
-            for _ in 0..2 {
-                for z in 0..c {
-                    for _ in 0..n {
-                        res.push(now_c + z);
-                    }
-                }
+            for _ in 0..n {
+                res.push(now_c);
             }
-            now_c += c;
+            now_c += 1;
         }
     }
 
@@ -184,28 +155,10 @@ fn solve(input: String) -> String {
     format!("{}\n{}", len, res_str).to_string()
 }
 
-//aaabbbaaabbb
-//1ブロックn文字、c種類の文字種から任意文字種選んで
-fn len_n2(c: u64, n: u64) -> u64 {
-    //1ブロックn文字、c種類の文字からなるやつからi文字種選んで
-    fn f(i: u64, c: u64, n: u64) -> u64 {
-        if i == 1 {
-            c * len_n(2 * n)
-        } else {
-            //文字種の選び方
-            combi(c, i)
-                * (1..n + 1)
-                    .map(|x| combi(n, x).pow(2))
-                    .sum::<u64>()
-                    .pow(i as u32)
-        }
-    }
-
-    (1..c + 1).map(|x| f(x, c, n)).sum::<u64>()
-}
-
 fn len_n(n: u64) -> u64 {
-    (0..n / 2).map(|i| combi(n, n - 2 * i)).sum::<u64>()
+    (0..n / 2)
+        .map(|i| combi(n, (n / 2 * 2) - 2 * i))
+        .sum::<u64>()
 }
 
 fn combi(n: u64, r: u64) -> u64 {
