@@ -124,27 +124,6 @@ fn solve(input: String) -> String {
         })
         .collect::<Vec<_>>();*/
 
-    //c-n
-    //25-1
-    //19-2
-    //11-3
-    //8-4
-    //6-5
-    //5-6
-    //4-7
-    //3-8
-    //2-14
-    //1-25
-    /*let mut table = (1..25 + 1)
-        .flat_map(|c| {
-            (1..(24-c)+1)
-                .map(|n| (c, n, len_n2(c, n)))
-                //.take_while(|&(_, _, x)| x < inf)
-                .collect::<Vec<_>>()
-                .into_iter()
-        })
-        .collect::<Vec<_>>();*/
-
     fn a2b(a: u64, b: u64) -> Vec<(u64, u64)> {
         (1..a + 1)
             .flat_map(|x| (1..b + 1).map(|y| (x, y)).collect::<Vec<_>>())
@@ -166,14 +145,12 @@ fn solve(input: String) -> String {
     ].into_iter()
         .flat_map(|(a, b)| a2b(a, b))
         .map(|(c, n)| (c, n, len_n2(c, n)))
-        .chain((2..50).map(|n| (0, n, len_n(n))))
         .collect::<Vec<_>>();
 
     table.sort_by_key(|&(c, n, x)| {
-        let len = if c == 0 { n } else { 2 * n * c };
+        let len = 2 * n * c;
         (x * 10000 / len as u64)
     });
-
     table.reverse();
 
     //println!("{:?}", table);
@@ -182,26 +159,16 @@ fn solve(input: String) -> String {
     let mut res = Vec::new();
     let mut now_c = 1;
     for (c, n, x) in table {
-        if c == 0 {
-            while now_n >= x {
-                now_n -= x;
-                for _ in 0..n {
-                    res.push(now_c);
-                }
-                now_c += 1;
-            }
-        } else {
-            while now_n >= x {
-                now_n -= x;
-                for _ in 0..2 {
-                    for z in 0..c {
-                        for _ in 0..n {
-                            res.push(now_c + z);
-                        }
+        while now_n >= x {
+            now_n -= x;
+            for _ in 0..2 {
+                for z in 0..c {
+                    for _ in 0..n {
+                        res.push(now_c + z);
                     }
                 }
-                now_c += c;
             }
+            now_c += c;
         }
     }
 
@@ -238,9 +205,7 @@ fn len_n2(c: u64, n: u64) -> u64 {
 }
 
 fn len_n(n: u64) -> u64 {
-    (0..n / 2)
-        .map(|i| combi(n, (n / 2 * 2) - 2 * i))
-        .sum::<u64>()
+    (0..n / 2).map(|i| combi(n, n - 2 * i)).sum::<u64>()
 }
 
 fn combi(n: u64, r: u64) -> u64 {
