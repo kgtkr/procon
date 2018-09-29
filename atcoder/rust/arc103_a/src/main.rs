@@ -78,6 +78,10 @@ fn main() {
 
 fn solve(input: String) -> String {
     input!(input=>(n:usize)(list:[usize]));
+    let x = list[0];
+    if list.clone().into_iter().all(|y| x == y) {
+        return (n / 2).to_string();
+    }
     let a = {
         let mut vec = Vec::new();
         vec.resize(100001, 0);
@@ -86,13 +90,10 @@ fn solve(input: String) -> String {
                 vec[x] += 1;
             }
         }
-        let mut max_x = (0, 0);
-        for (i, x) in vec.into_iter().enumerate() {
-            if max_x.1 < x {
-                max_x = (i, x);
-            }
-        }
-        max_x
+        let mut vec = vec.into_iter().enumerate().collect::<Vec<_>>();
+        vec.sort_by_key(|&(_, x)| x);
+        vec.reverse();
+        vec
     };
 
     let b = {
@@ -103,16 +104,17 @@ fn solve(input: String) -> String {
                 vec[x] += 1;
             }
         }
-        let mut max_x = (0, 0);
-        for (i, x) in vec.into_iter().enumerate() {
-            if max_x.1 < x {
-                max_x = (i, x);
-            }
-        }
-        max_x
+        let mut vec = vec.into_iter().enumerate().collect::<Vec<_>>();
+        vec.sort_by_key(|&(_, x)| x);
+        vec.reverse();
+        vec
     };
 
-    if a.0 == b.0 { n / 2 } else { n - a.1 - b.1 }.to_string()
+    if a[0].0 == b[0].0 {
+        std::cmp::min(n - a[0].1 - b[1].1, n - a[1].1 - b[0].1)
+    } else {
+        n - a[0].1 - b[0].1
+    }.to_string()
 }
 
 macro_rules! tests {
