@@ -77,9 +77,42 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(n:usize)(list:[usize]));
+    let a = {
+        let mut vec = Vec::new();
+        vec.resize(100001, 0);
+        for (i, x) in list.clone().into_iter().enumerate() {
+            if i % 2 == 0 {
+                vec[x] += 1;
+            }
+        }
+        let mut max_x = (0, 0);
+        for (i, x) in vec.into_iter().enumerate() {
+            if max_x.1 < x {
+                max_x = (i, x);
+            }
+        }
+        max_x
+    };
+
+    let b = {
+        let mut vec = Vec::new();
+        vec.resize(100001, 0);
+        for (i, x) in list.clone().into_iter().enumerate() {
+            if i % 2 == 1 {
+                vec[x] += 1;
+            }
+        }
+        let mut max_x = (0, 0);
+        for (i, x) in vec.into_iter().enumerate() {
+            if max_x.1 < x {
+                max_x = (i, x);
+            }
+        }
+        max_x
+    };
+
+    if a.0 == b.0 { n / 2 } else { n - a.1 - b.1 }.to_string()
 }
 
 macro_rules! tests {
@@ -96,9 +129,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "4\n3 1 3 2" => "1",
+    test2: "6\n105 119 105 119 105 119" => "0",
+    test3: "4\n1 1 1 1" => "2",
 }
