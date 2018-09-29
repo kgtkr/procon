@@ -78,22 +78,50 @@ fn main() {
 
 fn solve(input: String) -> String {
     input!(input=>(n:usize){n;list:(i64,i64)});
+    let len_list = list
+        .clone()
+        .into_iter()
+        .map(|(a, b)| a.abs() + b.abs())
+        .collect::<Vec<_>>();
     //偶奇が一致しなければ-1
-    {
-        let list = list
-            .clone()
-            .into_iter()
-            .map(|(a, b)| a + b)
-            .collect::<Vec<_>>();
-        let g = list[0] % 2;
-        for x in list {
-            if x % 2 != g {
-                return "-1".to_string();
-            }
+    for x in len_list.clone() {
+        if x % 2 != len_list[0] % 2 {
+            return "-1".to_string();
         }
     }
 
-    panic!();
+    //長さ
+    let m = len_list.into_iter().max().unwrap();
+    let mut res = Vec::new();
+    for (x, y) in list {
+        if x.abs() > 100 || y.abs() > 100 {
+            //部分点
+            panic!();
+        }
+        let mut s = String::new();
+        //残りの長さ
+        for _ in 0..x.abs() {
+            s.push(if x > 0 { 'R' } else { 'L' });
+        }
+
+        for _ in 0..y.abs() {
+            s.push(if y > 0 { 'U' } else { 'D' });
+        }
+        for i in 0..(m - x.abs() - y.abs()) {
+            s.push(if i % 2 == 0 { 'R' } else { 'L' });
+        }
+        res.push(s);
+    }
+
+    format!(
+        "{}\n{}\n{}",
+        m,
+        std::iter::repeat("1")
+            .take(m as usize)
+            .collect::<Vec<_>>()
+            .join(" "),
+        res.join("\n")
+    ).to_string()
 }
 
 macro_rules! tests {
