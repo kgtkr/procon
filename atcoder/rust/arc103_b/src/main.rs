@@ -77,9 +77,23 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(n:usize){n;list:(i64,i64)});
+    //偶奇が一致しなければ-1
+    {
+        let list = list
+            .clone()
+            .into_iter()
+            .map(|(a, b)| a + b)
+            .collect::<Vec<_>>();
+        let g = list[0] % 2;
+        for x in list {
+            if x % 2 != g {
+                return "-1".to_string();
+            }
+        }
+    }
+
+    panic!();
 }
 
 macro_rules! tests {
@@ -96,9 +110,8 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "3\n-1 0\n0 3\n2 -1" => "2\n1 2\nRL\nUU\nDR",
+    test2: "5\n0 0\n1 0\n2 0\n3 0\n4 0" => "-1",
+    test3: "2\n1 1\n1 1" => "2\n1 1\nRU\nUR",
+    test4: "3\n-7 -3\n7 3\n-3 -7" => "5\n3 1 4 1 5\nLRDUL\nRDULR\nDULRD",
 }
