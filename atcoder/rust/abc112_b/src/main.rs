@@ -77,13 +77,8 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(n:usize t:i64){n;list:(i64,i64)});
-    list.into_iter()
-        .filter(|&(_, x)| x <= t)
-        .map(|(x, _)| x)
-        .min()
-        .map(|x| x.to_string())
-        .unwrap_or("TLE".to_string())
+    input!(input=>(x:i64 y:i64));
+    (x + y / 2).to_string()
 }
 
 macro_rules! tests {
@@ -100,7 +95,6 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 70\n7 60\n1 80\n4 50" => "4",
-    test2: "4 3\n1 1000\n2 4\n3 1000\n4 500" => "TLE",
-    test3: "5 9\n25 8\n5 9\n4 10\n1000 1000\n6 1" => "5",
+    test1: "81 58" => "110",
+    test2: "4 54" => "31",
 }
