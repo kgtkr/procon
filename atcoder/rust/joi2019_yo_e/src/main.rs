@@ -91,6 +91,7 @@ fn f(list: &Vec<i64>, m_list: &Vec<(usize, usize)>, dp: &mut Vec<i64>, i: usize)
         dp[i]
     } else {
         // どこから置けるか
+        // ここの高速化したい
         let mut now = i + 1;
         for &(l, r) in m_list {
             if l <= i && i <= r {
