@@ -80,11 +80,29 @@ fn solve(input: String) -> String {
     input!(input=>(n:usize m:usize)(list:[i64]){m;m_list:(@,@)});
     let mut dp = Vec::with_capacity(n);
     dp.resize(n, -1);
-    f(&list, &m_list, &mut dp, 0).to_string()
+    f(&list, &m_list_cov(n, m_list), &mut dp, 0).to_string()
+}
+
+fn m_list_cov(n: usize, mut m_list: Vec<(usize, usize)>) -> Vec<usize> {
+    let mut res = Vec::with_capacity(n);
+    res.resize(n, 0);
+
+    m_list.sort_by_key(|x| (x.1, x.0));
+    m_list.reverse();
+    // now〜n-1まで書き換え済み
+    let mut now = n;
+    for (l, r) in m_list {
+        for i in l..std::cmp::min(now, r + 1) {
+            res[i] = r;
+        }
+        now = l;
+    }
+
+    res
 }
 
 // i番目以降の最大値
-fn f(list: &Vec<i64>, m_list: &Vec<(usize, usize)>, dp: &mut Vec<i64>, i: usize) -> i64 {
+fn f(list: &Vec<i64>, m_list: &Vec<usize>, dp: &mut Vec<i64>, i: usize) -> i64 {
     if i >= list.len() {
         0
     } else if dp[i] != -1 {
@@ -92,12 +110,7 @@ fn f(list: &Vec<i64>, m_list: &Vec<(usize, usize)>, dp: &mut Vec<i64>, i: usize)
     } else {
         // どこから置けるか
         // ここの高速化したい
-        let mut now = i + 1;
-        for &(l, r) in m_list {
-            if l <= i && i <= r {
-                now = std::cmp::max(now, r + 1);
-            }
-        }
+        let now = std::cmp::max(i + 1, m_list[i] + 1);
         let res = std::cmp::max(
             f(list, m_list, dp, i + 1),
             list[i] + f(list, m_list, dp, now),
