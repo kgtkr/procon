@@ -80,7 +80,6 @@ fn solve(input: String) -> String {
     input!(input=>(n:usize m:usize)(list:[i64]){m;m_list:(@,@)});
     let mut dp = Vec::with_capacity(n);
     dp.resize(n, -1);
-    println!("{:?}", m_list_cov(n, m_list.clone()));
     f(&list, &m_list_cov(n, m_list), &mut dp, 0).to_string()
 }
 
@@ -110,11 +109,10 @@ fn f(list: &Vec<i64>, m_list: &Vec<usize>, dp: &mut Vec<i64>, i: usize) -> i64 {
         dp[i]
     } else {
         // どこから置けるか
-        // ここの高速化したい
-        let now = std::cmp::max(i + 1, m_list[i] + 1);
+        let now = std::cmp::max(i, m_list[i]);
         let res = std::cmp::max(
             f(list, m_list, dp, i + 1),
-            list[i] + f(list, m_list, dp, now),
+            list[i] + f(list, m_list, dp, now + 1),
         );
         dp[i] = res;
         res
