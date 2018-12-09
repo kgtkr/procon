@@ -108,7 +108,7 @@ fn f(list: &Vec<i64>, m_list: &Vec<usize>, dp: &mut Vec<i64>, i: usize) -> i64 {
     } else if dp[i] != -1 {
         dp[i]
     } else {
-        // どこから置けるか
+        // どこまで置けないか
         let now = std::cmp::max(i, m_list[i]);
         let res = std::cmp::max(
             f(list, m_list, dp, i + 1),
