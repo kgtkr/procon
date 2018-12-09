@@ -83,11 +83,36 @@ fn solve(input: String) -> String {
     f(&list, &m_list_cov(n, m_list), &mut dp, 0).to_string()
 }
 
+#[test]
+fn m_test() {
+    let a = 5;
+    let mut b = vec![(1, 2), (0, 4), (3, 3)];
+
+    assert_eq!(m_list_cov2(a, b.clone()), m_list_cov(a, b.clone()));
+
+    b.reverse();
+
+    assert_eq!(m_list_cov2(a, b.clone()), m_list_cov(a, b.clone()));
+}
+
+fn m_list_cov2(n: usize, mut m_list: Vec<(usize, usize)>) -> Vec<usize> {
+    let mut res = Vec::with_capacity(n);
+    res.resize(n, 0);
+
+    for (l, r) in m_list {
+        for i in l..r + 1 {
+            res[i] = std::cmp::max(res[i], r);
+        }
+    }
+
+    res
+}
+
 fn m_list_cov(n: usize, mut m_list: Vec<(usize, usize)>) -> Vec<usize> {
     let mut res = Vec::with_capacity(n);
     res.resize(n, 0);
 
-    /*m_list.sort_by_key(|x| (x.1, x.0));
+    m_list.sort_by_key(|x| (x.1, x.0));
     m_list.reverse();
     // now〜n-1まで書き換え済み
     let mut now = n;
@@ -96,12 +121,6 @@ fn m_list_cov(n: usize, mut m_list: Vec<(usize, usize)>) -> Vec<usize> {
             res[i] = r;
         }
         now = l;
-    }*/
-
-    for (l, r) in m_list {
-        for i in l..r + 1 {
-            res[i] = std::cmp::max(res[i], r);
-        }
     }
 
     res
