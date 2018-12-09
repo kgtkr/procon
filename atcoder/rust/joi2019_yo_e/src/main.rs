@@ -80,6 +80,7 @@ fn solve(input: String) -> String {
     input!(input=>(n:usize m:usize)(list:[i64]){m;m_list:(@,@)});
     let mut dp = Vec::with_capacity(n);
     dp.resize(n, -1);
+    println!("{:?}", m_list_cov(n, m_list.clone()));
     f(&list, &m_list_cov(n, m_list), &mut dp, 0).to_string()
 }
 
