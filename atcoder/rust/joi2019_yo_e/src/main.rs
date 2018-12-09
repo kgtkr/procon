@@ -89,10 +89,6 @@ fn m_test() {
     let mut b = vec![(1, 2), (0, 4), (3, 3)];
 
     assert_eq!(m_list_cov2(a, b.clone()), m_list_cov(a, b.clone()));
-
-    b.reverse();
-
-    assert_eq!(m_list_cov2(a, b.clone()), m_list_cov(a, b.clone()));
 }
 
 fn m_list_cov2(n: usize, mut m_list: Vec<(usize, usize)>) -> Vec<usize> {
@@ -120,7 +116,7 @@ fn m_list_cov(n: usize, mut m_list: Vec<(usize, usize)>) -> Vec<usize> {
         for i in l..std::cmp::min(now, r + 1) {
             res[i] = r;
         }
-        now = l;
+        now = std::cmp::min(now, l);
     }
 
     res
