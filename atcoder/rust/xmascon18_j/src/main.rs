@@ -88,6 +88,14 @@ impl Parser {
         }
     }
 
+    fn number_min(&mut self) -> Option<i64> {
+        let mut x = self.number_term_min()?;
+        while let Some(y) = self.number_term_min() {
+            x += y;
+        }
+        Some(x)
+    }
+
     fn number_suffix_big(&mut self) -> Option<i64> {
         let val = self.peek()?;
         let res = match val {
@@ -100,7 +108,7 @@ impl Parser {
     }
 
     fn number_term(&mut self) -> Option<i64> {
-        match (self.number_term_min(), self.number_suffix_big()) {
+        match (self.number_min(), self.number_suffix_big()) {
             (Some(p), Some(s)) => Some(p * s),
             (Some(p), None) => Some(p),
             (None, Some(s)) => Some(s),
@@ -160,6 +168,9 @@ fn parse_test() {
             Box::new(AST::Number(2)),
         )
     );
+
+    assert_eq!(parse("一億".to_string()), AST::Number(100000000));
+    assert_eq!(parse("三十二億".to_string()), AST::Number(3200000000));
 
     assert_eq!(
         parse("一億二千三百四十五万六千七百八十九".to_string()),
