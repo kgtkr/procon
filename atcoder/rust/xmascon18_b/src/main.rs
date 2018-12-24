@@ -1,12 +1,11 @@
 #![feature(no_panic_pow)]
 
 fn main() {
-    /*for n in 1..=20181224 {
+    for n in 1..=20181224 {
         if n_filter(n) {
             println!("{:?}", n);
         }
-    }*/
-    println!("{:?}", n_filter(304425));
+    }
 }
 
 fn pair_ab(c: u64, list: Vec<char>) -> bool {
