@@ -1,11 +1,12 @@
 #![feature(no_panic_pow)]
 
 fn main() {
-    for n in 1..=20181224 {
+    /*for n in 1..=20181224 {
         if n_filter(n) {
             println!("{:?}", n);
         }
-    }
+    }*/
+    println!("{:?}", n_filter(304425));
 }
 
 fn pair_ab(c: u64, list: Vec<char>) -> bool {
@@ -20,16 +21,24 @@ fn get_a(c: u64, cur: Vec<(u64, u64)>, list: Vec<char>) -> bool {
 }
 
 fn get_b(c: u64, a: u64, cur: Vec<(u64, u64)>, list: Vec<char>) -> bool {
-    (1..=list.len()).filter(|&n| n != list.len() - 1).any(|n| {
-        let (b, list) = split_first_n(list.clone(), n);
-        let mut cur = cur.clone();
-        cur.push((a, b));
-        if list.len() == 0 {
-            list_filter(cur, c)
-        } else {
-            get_a(c, cur, list)
-        }
-    })
+    //枝
+    (1..=std::cmp::min(list.len(), 2))
+        .filter(|&n| n != list.len() - 1)
+        .any(|n| {
+            let (b, list) = split_first_n(list.clone(), n);
+            //枝
+            if b <= 15 {
+                let mut cur = cur.clone();
+                cur.push((a, b));
+                if list.len() == 0 {
+                    list_filter(cur, c)
+                } else {
+                    get_a(c, cur, list)
+                }
+            } else {
+                false
+            }
+        })
 }
 
 // 先頭nを数値として返し、残りをリストとして返す
