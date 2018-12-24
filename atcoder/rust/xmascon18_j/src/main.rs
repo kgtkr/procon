@@ -1,8 +1,22 @@
+extern crate core;
+
+use std::io::{self, Read};
+
 fn main() {
-    println!("Hello, world!");
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let s = input.trim().to_string();
+    println!("{}", f(parse(s)) % 100000009);
 }
 
-#[derive(Eq, PartialEq, Debug)]
+fn f(ast: AST) -> i64 {
+    match ast {
+        AST::Number(x) => x,
+        AST::Pow(a, b) => f(*a).pow(f(*b) as u32),
+    }
+}
+
+#[derive(Eq, PartialEq, Debug, Clone)]
 enum AST {
     Number(i64),
     Pow(Box<AST>, Box<AST>),
