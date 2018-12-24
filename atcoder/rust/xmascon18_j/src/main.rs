@@ -147,6 +147,84 @@ impl Parser {
     }
 }
 
+fn a_string(n: i64) -> String {
+    match n {
+        0 => "〇",
+        1 => "一",
+        2 => "二",
+        3 => "三",
+        4 => "四",
+        5 => "五",
+        6 => "六",
+        7 => "七",
+        8 => "八",
+        9 => "九",
+        _ => panic!(),
+    }
+    .to_string()
+}
+
+fn min_string(mut n: i64) -> String {
+    if n == 0 {
+        return a_string(n);
+    }
+    let mut res = String::new();
+    if n > 1000 {
+        if n / 1000 != 1 {
+            res.push_str(&a_string(n / 1000));
+        }
+
+        res.push('千');
+        n = n / 1000 * 1000;
+    }
+
+    if n > 100 {
+        if n / 100 != 1 {
+            res.push_str(&a_string(n / 100));
+        }
+        res.push('百');
+        n = n / 100 * 100;
+    }
+
+    if n > 10 {
+        if n / 10 != 1 {
+            res.push_str(&a_string(n / 10));
+        }
+        res.push('十');
+        n = n / 10 * 10;
+    }
+
+    if n != 0 {
+        res.push_str(&a_string(n));
+    }
+
+    res
+}
+
+fn n_to_string(mut n: i64) -> String {
+    if n == 0 {
+        return a_string(n);
+    }
+    let mut res = String::new();
+    if n > 100000000 {
+        res.push_str(&min_string(n / 100000000));
+        res.push('億');
+        n = n / 100000000 * 100000000;
+    }
+
+    if n > 10000 {
+        res.push_str(&min_string(n / 10000));
+        res.push('万');
+        n = n / 10000 * 10000;
+    }
+
+    if n != 0 {
+        res.push_str(&min_string(n));
+    }
+
+    res
+}
+
 fn parse(s: String) -> AST {
     Parser::new(s).expr().unwrap()
 }
