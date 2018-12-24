@@ -1,11 +1,48 @@
 #![feature(no_panic_pow)]
 
+use std::sync::mpsc::channel;
+use threadpool::ThreadPool;
+
 fn main() {
-    for n in 1..=20181224 {
-        if n_filter(n) {
-            println!("{:?}", n);
-        }
+    let n_workers = 12;
+    let chank = 1000000;
+
+    let pool = ThreadPool::new(n_workers);
+    let (tx, rx) = channel();
+
+    let mut next = 1;
+    let last = 20181224;
+
+    while next <= last {
+        let a = next;
+        let b = std::cmp::min(next + chank, last);
+
+        let tx = tx.clone();
+        pool.execute(move || {
+            for n in a..=b {
+                if n_filter(n) {
+                    tx.send(n).unwrap();
+                }
+            }
+        });
+
+        next = b + 1;
     }
+
+    let mut res = Vec::new();
+    for n in rx {
+        res.push(n);
+    }
+
+    res.sort();
+
+    println!(
+        "{}",
+        res.into_iter()
+            .map(|x| x.to_string())
+            .collect::<Vec<_>>()
+            .join("\n")
+    );
 }
 
 fn pair_ab(c: u64, list: Vec<char>) -> bool {
