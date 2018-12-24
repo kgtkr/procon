@@ -77,7 +77,7 @@ fn split_last_n(list: Vec<char>, n: usize) -> Option<(Vec<char>, u64)> {
 }
 
 fn n_filter(n: u64) -> bool {
-    if digit_count(n) < 3 {
+    if n < 100 {
         false
     } else {
         //cの桁数
@@ -108,28 +108,4 @@ fn list_filter(ab: Vec<(u64, u64)>, c: u64) -> bool {
         .try_fold(1u64, |a, b| b.and_then(|b| a.checked_mul(b)));
 
     Some(x) == y
-}
-
-fn digit_count(n: u64) -> i32 {
-    if n < 10 {
-        1
-    } else if n < 100 {
-        2
-    } else if n < 1000 {
-        3
-    } else if n < 10000 {
-        4
-    } else if n < 100000 {
-        5
-    } else if n < 1000000 {
-        6
-    } else if n < 10000000 {
-        7
-    } else if n < 100000000 {
-        8
-    } else if n < 1000000000 {
-        9
-    } else {
-        panic!();
-    }
 }
