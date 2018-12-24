@@ -1,5 +1,7 @@
+#![feature(no_panic_pow)]
+
 fn main() {
-    for n in 1..=34425 {
+    for n in 1..=20181224 {
         if n_filter(n) {
             println!("{:?}", n);
         }
@@ -82,11 +84,11 @@ fn list_filter(ab: Vec<(u64, u64)>, c: u64) -> bool {
 
     let y = ab
         .into_iter()
-        .map(|(a, b)| a.pow(b as u32))
-        .product::<u64>()
-        * c;
+        .map(|(a, b)| a.checked_pow(b as u32))
+        .chain(std::iter::once(Some(c)))
+        .try_fold(1u64, |a, b| b.and_then(|b| a.checked_mul(b)));
 
-    x == y
+    Some(x) == y
 }
 
 fn digit_count(n: u64) -> i32 {
