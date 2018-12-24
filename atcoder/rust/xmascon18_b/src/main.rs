@@ -1,62 +1,17 @@
 #![feature(no_panic_pow)]
 
-use std::sync::mpsc::channel;
-use threadpool::ThreadPool;
-
-enum Msg {
-    Value(u64),
-    End,
-}
+extern crate rayon;
+use rayon::prelude::*;
 
 fn main() {
-    let n_workers = 12;
-    let chank = 1000000;
-
-    let pool = ThreadPool::new(n_workers);
-    let (tx, rx) = channel();
-
-    let mut next = 1;
-    let last = 20181224;
-    let mut active = 0;
-
-    while next <= last {
-        active += 1;
-        let a = next;
-        let b = std::cmp::min(next + chank, last);
-
-        let tx = tx.clone();
-        pool.execute(move || {
-            for n in a..=b {
-                if n_filter(n) {
-                    tx.send(Msg::Value(n)).unwrap();
-                }
-            }
-            tx.send(Msg::End).unwrap();
-        });
-
-        next = b + 1;
-    }
-
-    let mut res = Vec::new();
-    for x in rx {
-        match x {
-            Msg::Value(n) => res.push(n),
-            Msg::End => active -= 1,
-        }
-        if active == 0 {
-            break;
-        }
-    }
-
+    let mut res = (1..20181224u64 + 1)
+        .into_par_iter()
+        .filter(|&n| n_filter(n))
+        .collect::<Vec<_>>();
     res.sort();
-
-    println!(
-        "{}",
-        res.into_iter()
-            .map(|x| x.to_string())
-            .collect::<Vec<_>>()
-            .join("\n")
-    );
+    for n in res {
+        println!("{}", n);
+    }
 }
 
 fn pair_ab(c: u64, list: Vec<char>) -> bool {
