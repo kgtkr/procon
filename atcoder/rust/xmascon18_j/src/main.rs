@@ -67,12 +67,30 @@ impl Parser {
         Some(res)
     }
 
-    fn number_suffix(&mut self) -> Option<i64> {
+    fn number_suffix_min(&mut self) -> Option<i64> {
         let val = self.peek()?;
         let res = match val {
             '十' => 10,
             '百' => 100,
             '千' => 1000,
+            _ => return None,
+        };
+        self.next()?;
+        Some(res)
+    }
+
+    fn number_term_min(&mut self) -> Option<i64> {
+        match (self.number_prefix(), self.number_suffix_min()) {
+            (Some(p), Some(s)) => Some(p * s),
+            (Some(p), None) => Some(p),
+            (None, Some(s)) => Some(s),
+            _ => None,
+        }
+    }
+
+    fn number_suffix_big(&mut self) -> Option<i64> {
+        let val = self.peek()?;
+        let res = match val {
             '万' => 10000,
             '億' => 100000000,
             _ => return None,
@@ -82,7 +100,7 @@ impl Parser {
     }
 
     fn number_term(&mut self) -> Option<i64> {
-        match (self.number_prefix(), self.number_suffix()) {
+        match (self.number_term_min(), self.number_suffix_big()) {
             (Some(p), Some(s)) => Some(p * s),
             (Some(p), None) => Some(p),
             (None, Some(s)) => Some(s),
@@ -141,5 +159,10 @@ fn parse_test() {
             Box::new(AST::Pow(Box::new(AST::Number(4)), Box::new(AST::Number(3)))),
             Box::new(AST::Number(2)),
         )
+    );
+
+    assert_eq!(
+        parse("一億二千三百四十五万六千七百八十九".to_string()),
+        AST::Number(123456789)
     );
 }
