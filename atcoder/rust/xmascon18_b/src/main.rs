@@ -14,8 +14,9 @@ fn pair_ab(c: u64, list: Vec<char>) -> bool {
 
 fn get_a(c: u64, cur: Vec<(u64, u64)>, list: Vec<char>) -> bool {
     (1..=list.len() - 1).any(|n| {
-        let (a, list) = split_first_n(list.clone(), n);
-        get_b(c, a, cur.clone(), list)
+        split_first_n(list.clone(), n)
+            .map(|(a, list)| get_b(c, a, cur.clone(), list))
+            .unwrap_or(false)
     })
 }
 
@@ -24,46 +25,56 @@ fn get_b(c: u64, a: u64, cur: Vec<(u64, u64)>, list: Vec<char>) -> bool {
     (1..=std::cmp::min(list.len(), 2))
         .filter(|&n| n != list.len() - 1)
         .any(|n| {
-            let (b, list) = split_first_n(list.clone(), n);
-            //枝
-            if b <= 15 {
-                let mut cur = cur.clone();
-                cur.push((a, b));
-                if list.len() == 0 {
-                    list_filter(cur, c)
-                } else {
-                    get_a(c, cur, list)
-                }
-            } else {
-                false
-            }
+            split_first_n(list.clone(), n)
+                .map(|(b, list)| {
+                    //枝
+                    if b <= 15 {
+                        let mut cur = cur.clone();
+                        cur.push((a, b));
+                        if list.len() == 0 {
+                            list_filter(cur, c)
+                        } else {
+                            get_a(c, cur, list)
+                        }
+                    } else {
+                        false
+                    }
+                })
+                .unwrap_or(false)
         })
 }
 
-// 先頭nを数値として返し、残りをリストとして返す
-fn split_first_n(list: Vec<char>, n: usize) -> (u64, Vec<char>) {
+fn split_n(list: Vec<char>, n: usize) -> (Vec<char>, Vec<char>) {
     (
-        list.clone()
-            .into_iter()
-            .take(n)
-            .collect::<String>()
-            .parse::<u64>()
-            .unwrap(),
-        list.into_iter().skip(n).collect::<Vec<_>>(),
+        list.clone().into_iter().take(n).collect(),
+        list.into_iter().skip(n).collect(),
     )
+}
+// 先頭nを数値として返し、残りをリストとして返す
+fn split_first_n(list: Vec<char>, n: usize) -> Option<(u64, Vec<char>)> {
+    let (n, list) = split_n(list, n);
+    if n[0] != '0' {
+        Some((
+            n.into_iter().collect::<String>().parse::<u64>().unwrap(),
+            list,
+        ))
+    } else {
+        None
+    }
 }
 
 // 後方nを数値として返し、残りをリストとして返す
-fn split_last_n(list: Vec<char>, n: usize) -> (Vec<char>, u64) {
+fn split_last_n(list: Vec<char>, n: usize) -> Option<(Vec<char>, u64)> {
     let n = list.len() - n;
-    (
-        list.clone().into_iter().take(n).collect::<Vec<_>>(),
-        list.into_iter()
-            .skip(n)
-            .collect::<String>()
-            .parse::<u64>()
-            .unwrap(),
-    )
+    let (list, n) = split_n(list, n);
+    if n[0] != '0' {
+        Some((
+            list,
+            n.into_iter().collect::<String>().parse::<u64>().unwrap(),
+        ))
+    } else {
+        None
+    }
 }
 
 fn n_filter(n: u64) -> bool {
@@ -73,8 +84,9 @@ fn n_filter(n: u64) -> bool {
         //cの桁数
         let list = n.to_string().chars().collect::<Vec<_>>();
         (1..=list.len() - 2).any(|n| {
-            let (list, c) = split_last_n(list.clone(), n);
-            pair_ab(c, list)
+            split_last_n(list.clone(), n)
+                .map(|(list, c)| pair_ab(c, list))
+                .unwrap_or(false)
         })
     }
 }
