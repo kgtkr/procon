@@ -73,26 +73,19 @@ fn get_a(c: u64, cur: Vec<(u64, u64)>, list: Vec<char>) -> bool {
 
 fn get_b(c: u64, a: u64, cur: Vec<(u64, u64)>, list: Vec<char>) -> bool {
     //枝
-    (1..=std::cmp::min(list.len(), 2))
-        .filter(|&n| n != list.len() - 1)
-        .any(|n| {
-            split_first_n(list.clone(), n)
-                .map(|(b, list)| {
-                    //枝
-                    if b <= 15 {
-                        let mut cur = cur.clone();
-                        cur.push((a, b));
-                        if list.len() == 0 {
-                            list_filter(cur, c)
-                        } else {
-                            get_a(c, cur, list)
-                        }
-                    } else {
-                        false
-                    }
-                })
-                .unwrap_or(false)
-        })
+    (1..=list.len()).filter(|&n| n != list.len() - 1).any(|n| {
+        split_first_n(list.clone(), n)
+            .map(|(b, list)| {
+                let mut cur = cur.clone();
+                cur.push((a, b));
+                if list.len() == 0 {
+                    list_filter(cur, c)
+                } else {
+                    get_a(c, cur, list)
+                }
+            })
+            .unwrap_or(false)
+    })
 }
 
 fn split_n(list: Vec<char>, n: usize) -> (Vec<char>, Vec<char>) {
