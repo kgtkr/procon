@@ -329,6 +329,7 @@ fn parse_test() {
 }
 
 mod num_to_string {
+    //n:0-9
     fn pri(n: i64) -> String {
         match n {
             0 => "〇",
@@ -341,7 +342,7 @@ mod num_to_string {
             7 => "七",
             8 => "八",
             9 => "九",
-            x => panic!("0-9:{}", x),
+            _ => panic!(),
         }
         .to_string()
     }
