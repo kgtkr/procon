@@ -144,14 +144,14 @@ fn mod_pow(a: i64, b: i64, m: i64) -> i64 {
 
 fn eval(ast: AST, m: i64) -> i64 {
     match ast {
-        AST::Number(x) => x % m,
+        AST::Num(x) => x % m,
         AST::Pow(a, b) => eval(*a, m).pow(eval(*b, phi(m)) as u32) % m,
     }
 }
 
 #[derive(Eq, PartialEq, Debug, Clone)]
 pub enum AST {
-    Number(i64),
+    Num(i64),
     Pow(Box<AST>, Box<AST>),
 }
 
@@ -278,7 +278,7 @@ impl Parser {
         Ok(x)
     }
     fn expr(&mut self) -> Result<AST, ()> {
-        let mut x = AST::Number(self.number()?);
+        let mut x = AST::Num(self.number()?);
         while let Ok(a) = self.expr_pow() {
             x = AST::Pow(Box::new(x), Box::new(a));
         }
@@ -303,28 +303,28 @@ fn parse_test() {
     assert_eq!(
         Parser::parse("四の三の二乗乗".to_string()),
         AST::Pow(
-            Box::new(AST::Number(4)),
-            Box::new(AST::Pow(Box::new(AST::Number(3)), Box::new(AST::Number(2))))
+            Box::new(AST::Num(4)),
+            Box::new(AST::Pow(Box::new(AST::Num(3)), Box::new(AST::Num(2))))
         )
     );
 
     assert_eq!(
         Parser::parse("四の三乗の二乗".to_string()),
         AST::Pow(
-            Box::new(AST::Pow(Box::new(AST::Number(4)), Box::new(AST::Number(3)))),
-            Box::new(AST::Number(2)),
+            Box::new(AST::Pow(Box::new(AST::Num(4)), Box::new(AST::Num(3)))),
+            Box::new(AST::Num(2)),
         )
     );
 
-    assert_eq!(Parser::parse("一億".to_string()), AST::Number(100000000));
+    assert_eq!(Parser::parse("一億".to_string()), AST::Num(100000000));
     assert_eq!(
         Parser::parse("三十二億".to_string()),
-        AST::Number(3200000000)
+        AST::Num(3200000000)
     );
 
     assert_eq!(
         Parser::parse("一億二千三百四十五万六千七百八十九".to_string()),
-        AST::Number(123456789)
+        AST::Num(123456789)
     );
 }
 
