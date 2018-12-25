@@ -11,7 +11,7 @@ fn main() {
 
 fn solve(s: String) -> String {
     let mut memo = HashMap::new();
-    num_to_string::num(eval(Parser::parse(s), M, &mut memo))
+    num_to_string::num(eval(Parser::parse(s), M, &mut memo, 1) % M)
 }
 
 macro_rules! tests {
@@ -88,10 +88,52 @@ fn mod_pow(a: i64, b: i64, m: i64) -> i64 {
     (a % m).pow((b % phi(m)) as u32)
 }
 
-fn eval(ast: AST, m: i64, memo: &mut HashMap<i64, i64>) -> i64 {
+fn small_mod(x: i64, m: i64) -> i64 {
+    if x >= 200 {
+        (x - 200) % m + 200
+    } else {
+        x
+    }
+}
+
+fn phi_n(mut x: i64, n: i64, memo: &mut HashMap<i64, i64>) -> i64 {
+    for _ in 0..n {
+        x = memo_phi(x, memo);
+    }
+    x
+}
+
+pub fn mul(a: i64, b: i64, m: i64) -> i64 {
+    small_mod(small_mod(a, m) * small_mod(b, m), m)
+}
+
+pub fn mowpow(mut x: i64, mut n: i64, m: i64) -> i64 {
+    if n == 0 {
+        1
+    } else {
+        let mut res = 1;
+        while n > 1 {
+            if n % 2 != 0 {
+                res = mul(res, x, m);
+                x = x * x;
+                n = (n - 1) / 2;
+            } else {
+                x = x * x;
+                n = n / 2;
+            }
+        }
+        mul(res, x, m)
+    }
+}
+
+fn eval(ast: AST, m: i64, memo: &mut HashMap<i64, i64>, deep: i64) -> i64 {
     match ast {
-        AST::Num(x) => x % m,
-        AST::Pow(a, b) => eval(*a, m, memo).pow(eval(*b, memo_phi(m, memo), memo) as u32) % m,
+        AST::Num(x) => small_mod(x, m),
+        AST::Pow(a, b) => mowpow(
+            eval(*a, m, memo, deep),
+            eval(*b, phi_n(m, deep - 1, memo), memo, deep + 1),
+            m,
+        ),
     }
 }
 
