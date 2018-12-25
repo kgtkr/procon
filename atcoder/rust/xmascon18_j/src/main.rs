@@ -77,7 +77,8 @@ fn main() {
 }
 
 fn solve(s: String) -> String {
-    num_to_string::num(eval(Parser::parse(s), M))
+    let mut memo = HashMap::new();
+    num_to_string::num(eval(Parser::parse(s), M, &mut memo))
 }
 
 macro_rules! tests {
@@ -114,6 +115,18 @@ macro_rules! tests {
 
 const M: i64 = 1000000009;
 
+use std::collections::HashMap;
+
+fn memo_phi(n: i64, memo: &mut HashMap<i64, i64>) -> i64 {
+    if let Some(&x) = memo.get(&n) {
+        x
+    } else {
+        let res = phi(n);
+        memo.insert(n, res);
+        res
+    }
+}
+
 fn phi(mut n: i64) -> i64 {
     if n == 0 {
         0
@@ -142,10 +155,10 @@ fn mod_pow(a: i64, b: i64, m: i64) -> i64 {
     (a % m).pow((b % phi(m)) as u32)
 }
 
-fn eval(ast: AST, m: i64) -> i64 {
+fn eval(ast: AST, m: i64, memo: &mut HashMap<i64, i64>) -> i64 {
     match ast {
         AST::Num(x) => x % m,
-        AST::Pow(a, b) => eval(*a, m).pow(eval(*b, phi(m)) as u32) % m,
+        AST::Pow(a, b) => eval(*a, m, memo).pow(eval(*b, memo_phi(m, memo), memo) as u32) % m,
     }
 }
 
