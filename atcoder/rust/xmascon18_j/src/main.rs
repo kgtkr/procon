@@ -77,7 +77,7 @@ fn main() {
 }
 
 fn solve(s: String) -> String {
-    n_to_string(eval(parse(s), M))
+    n_to_string(eval(Parser::parse(s), M))
 }
 
 macro_rules! tests {
@@ -131,7 +131,7 @@ fn eval(ast: AST, m: i64) -> i64 {
 }
 
 #[derive(Eq, PartialEq, Debug, Clone)]
-enum AST {
+pub enum AST {
     Number(i64),
     Pow(Box<AST>, Box<AST>),
 }
@@ -273,6 +273,40 @@ impl Parser {
             Err(())
         }
     }
+
+    fn parse(s: String) -> AST {
+        Parser::new(s).expr().unwrap()
+    }
+}
+
+#[test]
+fn parse_test() {
+    assert_eq!(
+        Parser::parse("四の三の二乗乗".to_string()),
+        AST::Pow(
+            Box::new(AST::Number(4)),
+            Box::new(AST::Pow(Box::new(AST::Number(3)), Box::new(AST::Number(2))))
+        )
+    );
+
+    assert_eq!(
+        Parser::parse("四の三乗の二乗".to_string()),
+        AST::Pow(
+            Box::new(AST::Pow(Box::new(AST::Number(4)), Box::new(AST::Number(3)))),
+            Box::new(AST::Number(2)),
+        )
+    );
+
+    assert_eq!(Parser::parse("一億".to_string()), AST::Number(100000000));
+    assert_eq!(
+        Parser::parse("三十二億".to_string()),
+        AST::Number(3200000000)
+    );
+
+    assert_eq!(
+        Parser::parse("一億二千三百四十五万六千七百八十九".to_string()),
+        AST::Number(123456789)
+    );
 }
 
 fn a_string(n: i64) -> String {
@@ -351,37 +385,6 @@ fn n_to_string(mut n: i64) -> String {
     }
 
     res
-}
-
-fn parse(s: String) -> AST {
-    Parser::new(s).expr().unwrap()
-}
-
-#[test]
-fn parse_test() {
-    assert_eq!(
-        parse("四の三の二乗乗".to_string()),
-        AST::Pow(
-            Box::new(AST::Number(4)),
-            Box::new(AST::Pow(Box::new(AST::Number(3)), Box::new(AST::Number(2))))
-        )
-    );
-
-    assert_eq!(
-        parse("四の三乗の二乗".to_string()),
-        AST::Pow(
-            Box::new(AST::Pow(Box::new(AST::Number(4)), Box::new(AST::Number(3)))),
-            Box::new(AST::Number(2)),
-        )
-    );
-
-    assert_eq!(parse("一億".to_string()), AST::Number(100000000));
-    assert_eq!(parse("三十二億".to_string()), AST::Number(3200000000));
-
-    assert_eq!(
-        parse("一億二千三百四十五万六千七百八十九".to_string()),
-        AST::Number(123456789)
-    );
 }
 
 tests! {
