@@ -360,7 +360,11 @@ mod num_to_string {
 
     #[test]
     fn test() {
+        assert_eq!(num(0), "〇".to_string());
         assert_eq!(num(10), "十".to_string());
+        assert_eq!(num(10000), "一万".to_string());
+        assert_eq!(num(100130), "十万百三十".to_string());
+        assert_eq!(num(300000000), "三億".to_string());
     }
 }
 
@@ -369,4 +373,5 @@ tests! {
     test2: "四の三乗の二乗\n" => "四千九十六\n",
     test3: "十億十\n" => "一\n",
     test4: "一億二千三百四十五万六千七百八十九の二の〇の〇乗乗乗\n" => "六億千三百一万六千三百十九\n",
+    test0: "〇の〇乗\n" => "一\n",
 }
