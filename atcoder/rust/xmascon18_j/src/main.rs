@@ -115,10 +115,10 @@ pub fn mowpow(mut x: i64, mut n: i64, m: i64) -> i64 {
         while n > 1 {
             if n % 2 != 0 {
                 res = mul(res, x, m);
-                x = x * x;
+                x = mul(x, x, m);
                 n = (n - 1) / 2;
             } else {
-                x = x * x;
+                x = mul(x, x, m);
                 n = n / 2;
             }
         }
