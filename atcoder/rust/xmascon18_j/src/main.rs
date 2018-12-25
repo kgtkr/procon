@@ -2,17 +2,131 @@ extern crate core;
 
 use std::io::{self, Read};
 
+#[macro_export]
+macro_rules! input {
+  ($s:expr=>$($t:tt)*) => {
+    let mut lines=$s.split("\n");
+    $(
+        line_parse!(lines,$t);
+    )*
+  };
+}
+
+macro_rules! line_parse {
+  ($lines:expr,($($name:ident:$t:tt)*)) => {
+    let mut line=$lines.next().unwrap().split_whitespace();
+    $(value_def!(line,$name,$t);)*
+  };
+
+  //複数行
+  ($lines:expr,{$n:expr;$name:ident:$t:tt}) => {
+    values_def!($lines,$n,$name,$t);
+  };
+}
+
+macro_rules! value_def {
+    ($line:expr, $name:ident, $t:tt) => {
+        let $name = value!($line, $t);
+    };
+}
+
+macro_rules! values_def {
+    ($lines:expr, $n:expr, $name:ident, $t:tt) => {
+        let $name = {
+            let mut vec = Vec::new();
+            for i in 0..$n {
+                let mut next = $lines.next().unwrap().split_whitespace();
+                vec.push(value!(next, $t));
+            }
+            vec
+        };
+    };
+}
+
+macro_rules! value {
+  //配列
+  ($line:expr,[$t:tt]) => {
+    $line.map(|x|{
+      let mut iter=::std::iter::once(x);
+      value!(iter,$t)
+    }).collect::<Vec<_>>()
+  };
+  //タプル
+  ($line:expr,($($t:tt),*)) => {
+    ($(value!($line,$t),)*)
+  };
+  //文字列
+  ($line:expr,#) => {
+    $line.next().unwrap()
+  };
+  //インデックス(-1)
+  ($line:expr,@) => {
+    $line.next().unwrap().parse::<usize>().unwrap()-1
+  };
+  //単一値
+  ($line:expr,$t:ty) => {
+    $line.next().unwrap().parse::<$t>().unwrap()
+  };
+}
+
 fn main() {
     let mut input = String::new();
     io::stdin().read_to_string(&mut input).unwrap();
-    let s = input.trim().to_string();
-    println!("{}", f(parse(s)) % 100000009);
+    let output = solve(input.trim().to_string());
+    println!("{}", output);
 }
 
-fn f(ast: AST) -> i64 {
+fn solve(s: String) -> String {
+    n_to_string(eval(parse(s), M))
+}
+
+macro_rules! tests {
+    ($($name:ident: $input:expr=>$output:expr,)*) => {
+        mod tests {
+            $(
+                #[test]
+                fn $name() {
+                    assert_eq!($output.trim().to_string(),super::solve($input.trim().to_string()));
+                }
+            )*
+        }
+    }
+}
+
+const M: i64 = 1000000009;
+
+fn phi(mut n: i64) -> i64 {
+    if n == 0 {
+        0
+    } else {
+        let mut ans = n;
+        let mut x = 2;
+
+        while x * x <= n {
+            if n % x == 0 {
+                ans -= ans / x;
+                while n % x == 0 {
+                    n /= x;
+                }
+            }
+            x += 1;
+        }
+
+        if n > 1 {
+            ans -= ans / n;
+        }
+        ans
+    }
+}
+
+fn mod_pow(a: i64, b: i64, m: i64) -> i64 {
+    (a % m).pow((b % phi(m)) as u32)
+}
+
+fn eval(ast: AST, m: i64) -> i64 {
     match ast {
-        AST::Number(x) => x,
-        AST::Pow(a, b) => f(*a).pow(f(*b) as u32),
+        AST::Number(x) => x % m,
+        AST::Pow(a, b) => eval(*a, m).pow(eval(*b, phi(m)) as u32) % m,
     }
 }
 
@@ -35,34 +149,34 @@ impl Parser {
         }
     }
 
-    fn peek(&self) -> Option<char> {
-        self.s.get(self.pos).cloned()
+    fn peek(&self) -> Result<char, ()> {
+        self.s.get(self.pos).cloned().ok_or(())
     }
 
-    fn next(&mut self) -> Option<char> {
+    fn next(&mut self) -> Result<char, ()> {
         let val = self.peek();
         self.pos += 1;
         val
     }
 
-    fn char(&mut self, c: char) -> Option<char> {
+    fn char(&mut self, c: char) -> Result<char, ()> {
         self.expect(|x| x == c)
     }
 
-    fn expect<F>(&mut self, f: F) -> Option<char>
+    fn expect<F>(&mut self, f: F) -> Result<char, ()>
     where
         F: FnOnce(char) -> bool,
     {
         match self.peek() {
-            Some(x) if f(x) => {
+            Ok(x) if f(x) => {
                 self.next();
-                Some(x)
+                Ok(x)
             }
-            _ => None,
+            _ => Err(()),
         }
     }
 
-    fn number_prefix(&mut self) -> Option<i64> {
+    fn number_prefix(&mut self) -> Result<i64, ()> {
         let val = self.peek()?;
         let res = match val {
             '〇' => 0,
@@ -75,88 +189,88 @@ impl Parser {
             '七' => 7,
             '八' => 8,
             '九' => 9,
-            _ => return None,
+            _ => return Err(()),
         };
         self.next()?;
-        Some(res)
+        Ok(res)
     }
 
-    fn number_suffix_min(&mut self) -> Option<i64> {
+    fn number_suffix_min(&mut self) -> Result<i64, ()> {
         let val = self.peek()?;
         let res = match val {
             '十' => 10,
             '百' => 100,
             '千' => 1000,
-            _ => return None,
+            _ => return Err(()),
         };
         self.next()?;
-        Some(res)
+        Ok(res)
     }
 
-    fn number_term_min(&mut self) -> Option<i64> {
+    fn number_term_min(&mut self) -> Result<i64, ()> {
         match (self.number_prefix(), self.number_suffix_min()) {
-            (Some(p), Some(s)) => Some(p * s),
-            (Some(p), None) => Some(p),
-            (None, Some(s)) => Some(s),
-            _ => None,
+            (Ok(p), Ok(s)) => Ok(p * s),
+            (Ok(p), Err(_)) => Ok(p),
+            (Err(_), Ok(s)) => Ok(s),
+            _ => Err(()),
         }
     }
 
-    fn number_min(&mut self) -> Option<i64> {
+    fn number_min(&mut self) -> Result<i64, ()> {
         let mut x = self.number_term_min()?;
-        while let Some(y) = self.number_term_min() {
+        while let Ok(y) = self.number_term_min() {
             x += y;
         }
-        Some(x)
+        Ok(x)
     }
 
-    fn number_suffix_big(&mut self) -> Option<i64> {
+    fn number_suffix_big(&mut self) -> Result<i64, ()> {
         let val = self.peek()?;
         let res = match val {
             '万' => 10000,
             '億' => 100000000,
-            _ => return None,
+            _ => return Err(()),
         };
         self.next()?;
-        Some(res)
+        Ok(res)
     }
 
-    fn number_term(&mut self) -> Option<i64> {
+    fn number_term(&mut self) -> Result<i64, ()> {
         match (self.number_min(), self.number_suffix_big()) {
-            (Some(p), Some(s)) => Some(p * s),
-            (Some(p), None) => Some(p),
-            (None, Some(s)) => Some(s),
-            _ => None,
+            (Ok(p), Ok(s)) => Ok(p * s),
+            (Ok(p), Err(_)) => Ok(p),
+            (Err(_), Ok(s)) => Ok(s),
+            _ => Err(()),
         }
     }
 
-    fn number(&mut self) -> Option<i64> {
+    fn number(&mut self) -> Result<i64, ()> {
         let mut x = self.number_term()?;
-        while let Some(y) = self.number_term() {
+        while let Ok(y) = self.number_term() {
             x += y;
         }
-        Some(x)
+        Ok(x)
     }
 
-    fn expr_pow(&mut self) -> Option<AST> {
+    fn expr_pow(&mut self) -> Result<AST, ()> {
         self.char('の')?;
         let x = self.expr()?;
         self.char('乗')?;
-        Some(x)
+        Ok(x)
     }
-    fn expr(&mut self) -> Option<AST> {
+    fn expr(&mut self) -> Result<AST, ()> {
         let mut x = AST::Number(self.number()?);
-        while let Some(a) = self.expr_pow() {
+        while let Ok(a) = self.expr_pow() {
             x = AST::Pow(Box::new(x), Box::new(a));
         }
-        Some(x)
+        Ok(x)
     }
 
-    fn eof(&self) -> Option<()> {
+    fn eof(&self) -> Result<(), ()> {
         if self.s.len() == self.pos {
-            Some(())
+            Ok(())
         } else {
-            None
+            Err(())
         }
     }
 }
@@ -173,7 +287,7 @@ fn a_string(n: i64) -> String {
         7 => "七",
         8 => "八",
         9 => "九",
-        _ => panic!(),
+        x => panic!("0-9:{}", x),
     }
     .to_string()
 }
@@ -189,7 +303,7 @@ fn min_string(mut n: i64) -> String {
         }
 
         res.push('千');
-        n = n / 1000 * 1000;
+        n -= n / 1000 * 1000;
     }
 
     if n > 100 {
@@ -197,7 +311,7 @@ fn min_string(mut n: i64) -> String {
             res.push_str(&a_string(n / 100));
         }
         res.push('百');
-        n = n / 100 * 100;
+        n -= n / 100 * 100;
     }
 
     if n > 10 {
@@ -205,7 +319,7 @@ fn min_string(mut n: i64) -> String {
             res.push_str(&a_string(n / 10));
         }
         res.push('十');
-        n = n / 10 * 10;
+        n -= n / 10 * 10;
     }
 
     if n != 0 {
@@ -223,13 +337,13 @@ fn n_to_string(mut n: i64) -> String {
     if n > 100000000 {
         res.push_str(&min_string(n / 100000000));
         res.push('億');
-        n = n / 100000000 * 100000000;
+        n -= n / 100000000 * 100000000;
     }
 
     if n > 10000 {
         res.push_str(&min_string(n / 10000));
         res.push('万');
-        n = n / 10000 * 10000;
+        n -= n / 10000 * 10000;
     }
 
     if n != 0 {
@@ -268,4 +382,11 @@ fn parse_test() {
         parse("一億二千三百四十五万六千七百八十九".to_string()),
         AST::Number(123456789)
     );
+}
+
+tests! {
+    test1: "四の三の二乗乗\n" => "二十六万二千百四十四\n",
+    test2: "四の三乗の二乗\n" => "四千九十六\n",
+    test3: "十億十\n" => "一\n",
+    test4: "一億二千三百四十五万六千七百八十九の二の〇の〇乗乗乗\n" => "六億千三百一万六千三百十九\n",
 }
