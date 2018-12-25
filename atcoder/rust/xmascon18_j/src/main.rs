@@ -77,7 +77,7 @@ fn main() {
 }
 
 fn solve(s: String) -> String {
-    num_to_string::n_to_string(eval(Parser::parse(s), M))
+    num_to_string::num(eval(Parser::parse(s), M))
 }
 
 macro_rules! tests {
@@ -329,7 +329,7 @@ fn parse_test() {
 }
 
 mod num_to_string {
-    fn a_string(n: i64) -> String {
+    fn pri(n: i64) -> String {
         match n {
             0 => "〇",
             1 => "一",
@@ -346,14 +346,14 @@ mod num_to_string {
         .to_string()
     }
 
-    fn min_string(mut n: i64) -> String {
+    fn low_num(mut n: i64) -> String {
         if n == 0 {
-            return a_string(n);
+            return pri(n);
         }
         let mut res = String::new();
         if n > 1000 {
             if n / 1000 != 1 {
-                res.push_str(&a_string(n / 1000));
+                res.push_str(&pri(n / 1000));
             }
 
             res.push('千');
@@ -362,7 +362,7 @@ mod num_to_string {
 
         if n > 100 {
             if n / 100 != 1 {
-                res.push_str(&a_string(n / 100));
+                res.push_str(&pri(n / 100));
             }
             res.push('百');
             n -= n / 100 * 100;
@@ -370,38 +370,38 @@ mod num_to_string {
 
         if n > 10 {
             if n / 10 != 1 {
-                res.push_str(&a_string(n / 10));
+                res.push_str(&pri(n / 10));
             }
             res.push('十');
             n -= n / 10 * 10;
         }
 
         if n != 0 {
-            res.push_str(&a_string(n));
+            res.push_str(&pri(n));
         }
 
         res
     }
 
-    pub fn n_to_string(mut n: i64) -> String {
+    pub fn num(mut n: i64) -> String {
         if n == 0 {
-            return a_string(n);
+            return pri(n);
         }
         let mut res = String::new();
         if n > 100000000 {
-            res.push_str(&min_string(n / 100000000));
+            res.push_str(&low_num(n / 100000000));
             res.push('億');
             n -= n / 100000000 * 100000000;
         }
 
         if n > 10000 {
-            res.push_str(&min_string(n / 10000));
+            res.push_str(&low_num(n / 10000));
             res.push('万');
             n -= n / 10000 * 10000;
         }
 
         if n != 0 {
-            res.push_str(&min_string(n));
+            res.push_str(&low_num(n));
         }
 
         res
