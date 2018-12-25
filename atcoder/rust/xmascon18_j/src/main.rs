@@ -366,6 +366,10 @@ mod num_to_string {
         assert_eq!(num(100130), "十万百三十".to_string());
         assert_eq!(num(300000000), "三億".to_string());
         assert_eq!(num(1500000000), "十五億".to_string());
+        assert_eq!(
+            num(9999999),
+            "九百九十九万九千九百九十九".to_string()
+        );
     }
 }
 
