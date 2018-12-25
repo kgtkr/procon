@@ -331,6 +331,10 @@ fn parse_test() {
 mod num_to_string {
     //n:0-9
     fn pri(n: i64) -> String {
+        if n < 0 || 9 < n {
+            panic!();
+        }
+
         match n {
             0 => "〇",
             1 => "一",
@@ -342,7 +346,7 @@ mod num_to_string {
             7 => "七",
             8 => "八",
             9 => "九",
-            _ => panic!(),
+            _ => unreachable!(),
         }
         .to_string()
     }
@@ -360,7 +364,12 @@ mod num_to_string {
         }
     }
 
+    //n:0-9999
     fn low_num(mut n: i64) -> String {
+        if n < 0 || 9999 < n {
+            panic!();
+        }
+
         if n == 0 {
             pri(n)
         } else {
