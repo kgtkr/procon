@@ -298,7 +298,7 @@ mod num_to_string {
     }
 
     fn low_term(res: &mut String, n: i64, pp_c: char, pp: i64) -> i64 {
-        if n > pp {
+        if n >= pp {
             if n / pp != 1 {
                 res.push_str(&pri(n / pp));
             }
@@ -333,7 +333,7 @@ mod num_to_string {
     }
 
     fn term(res: &mut String, n: i64, pp_c: char, pp: i64) -> i64 {
-        if n > pp {
+        if n >= pp {
             res.push_str(&low_num(n / pp));
             res.push(pp_c);
             n - n / pp * pp
@@ -356,6 +356,11 @@ mod num_to_string {
 
             res
         }
+    }
+
+    #[test]
+    fn test() {
+        assert_eq!(num(10), "十".to_string());
     }
 }
 
