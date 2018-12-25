@@ -347,13 +347,13 @@ mod num_to_string {
         .to_string()
     }
 
-    fn low_term(res: &mut String, n: i64, pp_s: char, pp: i64) -> i64 {
+    fn low_term(res: &mut String, n: i64, pp_c: char, pp: i64) -> i64 {
         if n > pp {
             if n / pp != 1 {
                 res.push_str(&pri(n / pp));
             }
 
-            res.push(pp_s);
+            res.push(pp_c);
             n - n / pp * pp
         } else {
             n
@@ -377,28 +377,30 @@ mod num_to_string {
         }
     }
 
+    fn term(res: &mut String, n: i64, pp_c: char, pp: i64) -> i64 {
+        if n > pp {
+            res.push_str(&low_num(n / pp));
+            res.push(pp_c);
+            n - n / pp * pp
+        } else {
+            n
+        }
+    }
+
     pub fn num(mut n: i64) -> String {
         if n == 0 {
-            return pri(n);
-        }
-        let mut res = String::new();
-        if n > 100000000 {
-            res.push_str(&low_num(n / 100000000));
-            res.push('億');
-            n -= n / 100000000 * 100000000;
-        }
+            pri(n)
+        } else {
+            let mut res = String::new();
+            n = term(&mut res, n, '億', 100000000);
+            n = term(&mut res, n, '万', 10000);
 
-        if n > 10000 {
-            res.push_str(&low_num(n / 10000));
-            res.push('万');
-            n -= n / 10000 * 10000;
-        }
+            if n != 0 {
+                res.push_str(&low_num(n));
+            }
 
-        if n != 0 {
-            res.push_str(&low_num(n));
+            res
         }
-
-        res
     }
 }
 
