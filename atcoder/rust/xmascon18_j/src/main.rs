@@ -93,6 +93,25 @@ macro_rules! tests {
     }
 }
 
+/*
+原始的な:primitive→pri
+小さい:low
+大きい:high
+係数:coefficient→coe
+累乗数:perfect power→pp
+項:term
+数字:number→num
+
+命名
+二:pri
+十:low_pp
+万:high_pp
+三百:low_term
+十万:big_term
+千三百:coe
+一億五千万:num
+*/
+
 const M: i64 = 1000000009;
 
 fn phi(mut n: i64) -> i64 {
