@@ -77,7 +77,7 @@ fn main() {
 }
 
 fn solve(s: String) -> String {
-    n_to_string(eval(Parser::parse(s), M))
+    num_to_string::n_to_string(eval(Parser::parse(s), M))
 }
 
 macro_rules! tests {
@@ -107,8 +107,8 @@ macro_rules! tests {
 十:low_pp
 万:high_pp
 三百:low_term
-十万:big_term
-千三百:coe
+十万:term
+千三百:low_num
 一億五千万:num
 */
 
@@ -195,7 +195,7 @@ impl Parser {
         }
     }
 
-    fn number_prefix(&mut self) -> Result<i64, ()> {
+    fn pri(&mut self) -> Result<i64, ()> {
         let val = self.peek()?;
         let res = match val {
             '〇' => 0,
@@ -214,7 +214,7 @@ impl Parser {
         Ok(res)
     }
 
-    fn number_suffix_min(&mut self) -> Result<i64, ()> {
+    fn low_pp(&mut self) -> Result<i64, ()> {
         let val = self.peek()?;
         let res = match val {
             '十' => 10,
@@ -226,8 +226,8 @@ impl Parser {
         Ok(res)
     }
 
-    fn number_term_min(&mut self) -> Result<i64, ()> {
-        match (self.number_prefix(), self.number_suffix_min()) {
+    fn low_term(&mut self) -> Result<i64, ()> {
+        match (self.pri(), self.low_pp()) {
             (Ok(p), Ok(s)) => Ok(p * s),
             (Ok(p), Err(_)) => Ok(p),
             (Err(_), Ok(s)) => Ok(s),
@@ -235,15 +235,15 @@ impl Parser {
         }
     }
 
-    fn number_min(&mut self) -> Result<i64, ()> {
-        let mut x = self.number_term_min()?;
-        while let Ok(y) = self.number_term_min() {
+    fn low_num(&mut self) -> Result<i64, ()> {
+        let mut x = self.low_term()?;
+        while let Ok(y) = self.low_term() {
             x += y;
         }
         Ok(x)
     }
 
-    fn number_suffix_big(&mut self) -> Result<i64, ()> {
+    fn high_pp(&mut self) -> Result<i64, ()> {
         let val = self.peek()?;
         let res = match val {
             '万' => 10000,
@@ -254,8 +254,8 @@ impl Parser {
         Ok(res)
     }
 
-    fn number_term(&mut self) -> Result<i64, ()> {
-        match (self.number_min(), self.number_suffix_big()) {
+    fn term(&mut self) -> Result<i64, ()> {
+        match (self.low_num(), self.high_pp()) {
             (Ok(p), Ok(s)) => Ok(p * s),
             (Ok(p), Err(_)) => Ok(p),
             (Err(_), Ok(s)) => Ok(s),
@@ -263,9 +263,9 @@ impl Parser {
         }
     }
 
-    fn number(&mut self) -> Result<i64, ()> {
-        let mut x = self.number_term()?;
-        while let Ok(y) = self.number_term() {
+    fn num(&mut self) -> Result<i64, ()> {
+        let mut x = self.term()?;
+        while let Ok(y) = self.term() {
             x += y;
         }
         Ok(x)
@@ -278,7 +278,7 @@ impl Parser {
         Ok(x)
     }
     fn expr(&mut self) -> Result<AST, ()> {
-        let mut x = AST::Num(self.number()?);
+        let mut x = AST::Num(self.num()?);
         while let Ok(a) = self.expr_pow() {
             x = AST::Pow(Box::new(x), Box::new(a));
         }
@@ -328,82 +328,84 @@ fn parse_test() {
     );
 }
 
-fn a_string(n: i64) -> String {
-    match n {
-        0 => "〇",
-        1 => "一",
-        2 => "二",
-        3 => "三",
-        4 => "四",
-        5 => "五",
-        6 => "六",
-        7 => "七",
-        8 => "八",
-        9 => "九",
-        x => panic!("0-9:{}", x),
+mod num_to_string {
+    fn a_string(n: i64) -> String {
+        match n {
+            0 => "〇",
+            1 => "一",
+            2 => "二",
+            3 => "三",
+            4 => "四",
+            5 => "五",
+            6 => "六",
+            7 => "七",
+            8 => "八",
+            9 => "九",
+            x => panic!("0-9:{}", x),
+        }
+        .to_string()
     }
-    .to_string()
-}
 
-fn min_string(mut n: i64) -> String {
-    if n == 0 {
-        return a_string(n);
-    }
-    let mut res = String::new();
-    if n > 1000 {
-        if n / 1000 != 1 {
-            res.push_str(&a_string(n / 1000));
+    fn min_string(mut n: i64) -> String {
+        if n == 0 {
+            return a_string(n);
+        }
+        let mut res = String::new();
+        if n > 1000 {
+            if n / 1000 != 1 {
+                res.push_str(&a_string(n / 1000));
+            }
+
+            res.push('千');
+            n -= n / 1000 * 1000;
         }
 
-        res.push('千');
-        n -= n / 1000 * 1000;
-    }
-
-    if n > 100 {
-        if n / 100 != 1 {
-            res.push_str(&a_string(n / 100));
+        if n > 100 {
+            if n / 100 != 1 {
+                res.push_str(&a_string(n / 100));
+            }
+            res.push('百');
+            n -= n / 100 * 100;
         }
-        res.push('百');
-        n -= n / 100 * 100;
-    }
 
-    if n > 10 {
-        if n / 10 != 1 {
-            res.push_str(&a_string(n / 10));
+        if n > 10 {
+            if n / 10 != 1 {
+                res.push_str(&a_string(n / 10));
+            }
+            res.push('十');
+            n -= n / 10 * 10;
         }
-        res.push('十');
-        n -= n / 10 * 10;
+
+        if n != 0 {
+            res.push_str(&a_string(n));
+        }
+
+        res
     }
 
-    if n != 0 {
-        res.push_str(&a_string(n));
-    }
+    pub fn n_to_string(mut n: i64) -> String {
+        if n == 0 {
+            return a_string(n);
+        }
+        let mut res = String::new();
+        if n > 100000000 {
+            res.push_str(&min_string(n / 100000000));
+            res.push('億');
+            n -= n / 100000000 * 100000000;
+        }
 
-    res
-}
+        if n > 10000 {
+            res.push_str(&min_string(n / 10000));
+            res.push('万');
+            n -= n / 10000 * 10000;
+        }
 
-fn n_to_string(mut n: i64) -> String {
-    if n == 0 {
-        return a_string(n);
-    }
-    let mut res = String::new();
-    if n > 100000000 {
-        res.push_str(&min_string(n / 100000000));
-        res.push('億');
-        n -= n / 100000000 * 100000000;
-    }
+        if n != 0 {
+            res.push_str(&min_string(n));
+        }
 
-    if n > 10000 {
-        res.push_str(&min_string(n / 10000));
-        res.push('万');
-        n -= n / 10000 * 10000;
+        res
     }
-
-    if n != 0 {
-        res.push_str(&min_string(n));
-    }
-
-    res
 }
 
 tests! {
