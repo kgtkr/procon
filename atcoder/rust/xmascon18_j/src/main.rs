@@ -347,41 +347,34 @@ mod num_to_string {
         .to_string()
     }
 
+    fn low_term(res: &mut String, n: i64, pp_s: char, pp: i64) -> i64 {
+        if n > pp {
+            if n / pp != 1 {
+                res.push_str(&pri(n / pp));
+            }
+
+            res.push(pp_s);
+            n - n / pp * pp
+        } else {
+            n
+        }
+    }
+
     fn low_num(mut n: i64) -> String {
         if n == 0 {
-            return pri(n);
-        }
-        let mut res = String::new();
-        if n > 1000 {
-            if n / 1000 != 1 {
-                res.push_str(&pri(n / 1000));
+            pri(n)
+        } else {
+            let mut res = String::new();
+            n = low_term(&mut res, n, '千', 1000);
+            n = low_term(&mut res, n, '百', 100);
+            n = low_term(&mut res, n, '十', 10);
+
+            if n != 0 {
+                res.push_str(&pri(n));
             }
 
-            res.push('千');
-            n -= n / 1000 * 1000;
+            res
         }
-
-        if n > 100 {
-            if n / 100 != 1 {
-                res.push_str(&pri(n / 100));
-            }
-            res.push('百');
-            n -= n / 100 * 100;
-        }
-
-        if n > 10 {
-            if n / 10 != 1 {
-                res.push_str(&pri(n / 10));
-            }
-            res.push('十');
-            n -= n / 10 * 10;
-        }
-
-        if n != 0 {
-            res.push_str(&pri(n));
-        }
-
-        res
     }
 
     pub fn num(mut n: i64) -> String {
