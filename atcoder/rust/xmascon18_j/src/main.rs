@@ -84,10 +84,6 @@ fn phi(mut n: i64) -> i64 {
     }
 }
 
-fn mod_pow(a: i64, b: i64, m: i64) -> i64 {
-    (a % m).pow((b % phi(m)) as u32)
-}
-
 fn small_mod(x: i64, m: i64) -> i64 {
     if x >= 200 {
         (x - 200) % m + 200
@@ -107,23 +103,16 @@ pub fn mul(a: i64, b: i64, m: i64) -> i64 {
     small_mod(small_mod(a, m) * small_mod(b, m), m)
 }
 
-pub fn mowpow(mut x: i64, mut n: i64, m: i64) -> i64 {
-    if n == 0 {
-        1
-    } else {
-        let mut res = 1;
-        while n > 1 {
-            if n % 2 != 0 {
-                res = mul(res, x, m);
-                x = mul(x, x, m);
-                n = (n - 1) / 2;
-            } else {
-                x = mul(x, x, m);
-                n = n / 2;
-            }
+pub fn mowpow(mut k: i64, mut r: i64, m: i64) -> i64 {
+    let mut res = 1;
+    while r > 0 {
+        if r % 2 != 0 {
+            res = mul(res, k, m);
         }
-        mul(res, x, m)
+        k = mul(k, k, m);
+        r = r / 2;
     }
+    res
 }
 
 fn eval(ast: AST, m: i64, memo: &mut HashMap<i64, i64>, deep: i64) -> i64 {
