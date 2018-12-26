@@ -11,7 +11,7 @@ fn main() {
 
 fn solve(s: String) -> String {
     let mut memo = HashMap::new();
-    num_to_string::num(eval(Parser::parse(s), M, &mut memo, 1) % M)
+    num_to_string::num(eval(Parser::parse(s), M, &mut memo, 0) % M)
 }
 
 macro_rules! tests {
@@ -91,14 +91,6 @@ fn small_mod(x: i64, m: i64) -> i64 {
         x
     }
 }
-
-fn phi_n(mut x: i64, n: i64, memo: &mut HashMap<i64, i64>) -> i64 {
-    for _ in 0..n {
-        x = memo_phi(x, memo);
-    }
-    x
-}
-
 pub fn mul(a: i64, b: i64, m: i64) -> i64 {
     small_mod(small_mod(a, m) * small_mod(b, m), m)
 }
@@ -116,14 +108,22 @@ pub fn mowpow(mut k: i64, mut r: i64, m: i64) -> i64 {
 }
 
 fn eval(ast: AST, m: i64, memo: &mut HashMap<i64, i64>, deep: i64) -> i64 {
-    match ast {
-        AST::Num(x) => small_mod(x, m),
-        AST::Pow(a, b) => mowpow(
-            eval(*a, m, memo, deep),
-            eval(*b, phi_n(m, deep - 1, memo), memo, deep + 1),
-            m,
-        ),
-    }
+    small_mod(
+        match ast {
+            AST::Num(x) => x,
+            AST::Pow(a, b) => mowpow(
+                eval(*a, m, memo, deep),
+                eval(
+                    *b,
+                    if deep != 0 { memo_phi(m, memo) } else { m },
+                    memo,
+                    deep + 1,
+                ),
+                m,
+            ),
+        },
+        m,
+    )
 }
 
 #[derive(Eq, PartialEq, Debug, Clone)]
