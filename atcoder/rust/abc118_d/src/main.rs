@@ -100,26 +100,59 @@ fn solve(input: String) -> String {
   let mut dp = Vec::with_capacity(n + 1);
   dp.resize(n + 1, None);
   f(n, &list, &mut dp)
-    .map(|x| x.to_string())
+    .map(|x| {
+      if x.len() == 0 {
+        "0".to_string()
+      } else {
+        x.into_iter()
+          .map(|x| x.to_string())
+          .collect::<Vec<_>>()
+          .join("")
+      }
+    })
     .unwrap_or("0".to_string())
 }
 
+fn vec_max(a: Vec<usize>, b: Vec<usize>) -> Vec<usize> {
+  if a.len() > b.len() {
+    a
+  } else if a.len() < b.len() {
+    b
+  } else {
+    for i in 0..a.len() {
+      if a[i] > b[i] {
+        return a;
+      } else if a[i] < b[i] {
+        return b;
+      }
+    }
+
+    a
+  }
+}
+
 //残り本数
-fn f(n: usize, list: &Vec<usize>, dp: &mut Vec<Option<Option<usize>>>) -> Option<usize> {
-  if let Some(x) = dp[n] {
-    return x;
+fn f(n: usize, list: &Vec<usize>, dp: &mut Vec<Option<Option<Vec<usize>>>>) -> Option<Vec<usize>> {
+  if let &Some(ref x) = &dp[n] {
+    return x.clone();
   }
 
   let res = if n == 0 {
-    Some(0)
+    Some(Vec::new())
   } else {
     let mut max = None;
     for &x in list {
       if n >= to_n(x) {
-        max = match (max, f(n - to_n(x), list, dp).map(|a| x + a * 10)) {
+        max = match (
+          max,
+          f(n - to_n(x), list, dp).map(|mut a| {
+            a.push(x);
+            a
+          }),
+        ) {
           (Some(x), None) => Some(x),
           (None, Some(x)) => Some(x),
-          (Some(a), Some(b)) => Some(std::cmp::max(a, b)),
+          (Some(a), Some(b)) => Some(vec_max(a, b)),
           (None, None) => None,
         };
       }
@@ -128,7 +161,7 @@ fn f(n: usize, list: &Vec<usize>, dp: &mut Vec<Option<Option<usize>>>) -> Option
     max
   };
 
-  dp[n] = Some(res);
+  dp[n] = Some(res.clone());
 
   res
 }
