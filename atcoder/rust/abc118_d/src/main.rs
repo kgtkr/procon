@@ -25,22 +25,22 @@ macro_rules! line_parse {
 }
 
 macro_rules! value_def {
-    ($line:expr, $name:ident, $t:tt) => {
-        let $name = value!($line, $t);
-    };
+  ($line:expr, $name:ident, $t:tt) => {
+    let $name = value!($line, $t);
+  };
 }
 
 macro_rules! values_def {
-    ($lines:expr, $n:expr, $name:ident, $t:tt) => {
-        let $name = {
-            let mut vec = Vec::new();
-            for i in 0..$n {
-                let mut next = $lines.next().unwrap().split_whitespace();
-                vec.push(value!(next, $t));
-            }
-            vec
-        };
+  ($lines:expr, $n:expr, $name:ident, $t:tt) => {
+    let $name = {
+      let mut vec = Vec::new();
+      for i in 0..$n {
+        let mut next = $lines.next().unwrap().split_whitespace();
+        vec.push(value!(next, $t));
+      }
+      vec
     };
+  };
 }
 
 macro_rules! value {
@@ -70,16 +70,67 @@ macro_rules! value {
 }
 
 fn main() {
-    let mut input = String::new();
-    io::stdin().read_to_string(&mut input).unwrap();
-    let output = solve(input.trim().to_string());
-    println!("{}", output);
+  let mut input = String::new();
+  io::stdin().read_to_string(&mut input).unwrap();
+  let output = solve(input.trim().to_string());
+  println!("{}", output);
+}
+
+fn to_n(x: usize) -> usize {
+  match x {
+    1 => 2,
+    2 => 5, //
+    3 => 5, //
+    4 => 4,
+    5 => 5,
+    6 => 6, //
+    7 => 3,
+    8 => 7,
+    9 => 6,
+    _ => panic!(),
+  }
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+  input!(input=>(n:usize m:usize)(list:[usize]));
+  let mut list = list;
+  list.sort();
+  list.reverse();
+
+  let mut dp = Vec::with_capacity(n + 1);
+  dp.resize(n + 1, None);
+  f(n, &list, &mut dp)
+    .map(|x| x.to_string())
+    .unwrap_or("0".to_string())
+}
+
+//残り本数
+fn f(n: usize, list: &Vec<usize>, dp: &mut Vec<Option<Option<usize>>>) -> Option<usize> {
+  if let Some(x) = dp[n] {
+    return x;
+  }
+
+  let res = if n == 0 {
+    Some(0)
+  } else {
+    let mut max = None;
+    for &x in list {
+      if n >= to_n(x) {
+        max = match (max, f(n - to_n(x), list, dp).map(|a| x + a * 10)) {
+          (Some(x), None) => Some(x),
+          (None, Some(x)) => Some(x),
+          (Some(a), Some(b)) => Some(std::cmp::max(a, b)),
+          (None, None) => None,
+        };
+      }
+    }
+
+    max
+  };
+
+  dp[n] = Some(res);
+
+  res
 }
 
 macro_rules! tests {
@@ -96,9 +147,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "20 4\n3 7 8 4\n" => "777773\n",
+    test2: "101 9\n9 8 7 6 5 4 3 2 1\n" => "71111111111111111111111111111111111111111111111111\n",
+    test3: "15 3\n5 4 6\n" => "654\n",
 }
