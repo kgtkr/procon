@@ -83,7 +83,6 @@ fn solve(input: String) -> String {
     let t = t.chars().collect::<Vec<_>>();
     let nm_lcm = lcm(m, n);
     let mut s_map = HashMap::new();
-    let mut t_map = HashMap::new();
 
     for i in 0..n {
         let a = i * nm_lcm / n;
@@ -92,7 +91,6 @@ fn solve(input: String) -> String {
 
     for i in 0..m {
         let a = i * nm_lcm / m;
-        t_map.insert(a, t[i]);
         if let Some(x) = s_map.get(&a) {
             if t[i] != *x {
                 return "-1".to_string();
