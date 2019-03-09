@@ -25,22 +25,22 @@ macro_rules! line_parse {
 }
 
 macro_rules! value_def {
-    ($line:expr, $name:ident, $t:tt) => {
-        let $name = value!($line, $t);
-    };
+  ($line:expr, $name:ident, $t:tt) => {
+    let $name = value!($line, $t);
+  };
 }
 
 macro_rules! values_def {
-    ($lines:expr, $n:expr, $name:ident, $t:tt) => {
-        let $name = {
-            let mut vec = Vec::new();
-            for i in 0..$n {
-                let mut next = $lines.next().unwrap().split_whitespace();
-                vec.push(value!(next, $t));
-            }
-            vec
-        };
+  ($lines:expr, $n:expr, $name:ident, $t:tt) => {
+    let $name = {
+      let mut vec = Vec::new();
+      for i in 0..$n {
+        let mut next = $lines.next().unwrap().split_whitespace();
+        vec.push(value!(next, $t));
+      }
+      vec
     };
+  };
 }
 
 macro_rules! value {
@@ -70,16 +70,25 @@ macro_rules! value {
 }
 
 fn main() {
-    let mut input = String::new();
-    io::stdin().read_to_string(&mut input).unwrap();
-    let output = solve(input.trim().to_string());
-    println!("{}", output);
+  let mut input = String::new();
+  io::stdin().read_to_string(&mut input).unwrap();
+  let output = solve(input.trim().to_string());
+  println!("{}", output);
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+  input!(input=>(n:usize m:usize c:i64)(b_list:[i64]){n;list:[i64]});
+  let mut res = 0;
+  for prob in list {
+    let mut x = c;
+    for i in 0..m {
+      x += prob[i] * b_list[i];
+    }
+    if x > 0 {
+      res += 1;
+    }
+  }
+  res.to_string()
 }
 
 macro_rules! tests {
@@ -96,9 +105,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "2 3 -10\n1 2 3\n3 2 1\n1 2 2\n" => "1\n",
+    test2: "5 2 -4\n-2 5\n100 41\n100 40\n-3 0\n-6 -2\n18 -13\n" => "2\n",
+    test3: "3 3 0\n100 -100 0\n0 100 100\n100 100 100\n-100 100 100\n" => "0\n",
 }
