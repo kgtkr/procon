@@ -145,7 +145,6 @@ fn make_line(
   res: &mut Vec<(i64, i64, i64)>,
   rev: bool,
 ) -> i64 {
-  let rev = true;
   let mut max_x = cur_x;
   let mut cur_z = if !rev { 0 } else { l };
   loop {
