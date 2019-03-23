@@ -116,9 +116,11 @@ fn make_side(
 ) -> i64 {
   let mut max_x = cur_x;
   let mut cur_y = RMQRUQ::new(l as usize);
+  let mut c = 0;
   loop {
+    c += 1;
     if let Some(&(_, (r, _))) = rp.last() {
-      let x = make_line(l, cur_x, &mut cur_y, rp, res);
+      let x = make_line(l, cur_x, &mut cur_y, rp, res, c % 2 != 0);
       max_x = std::cmp::max(max_x, x);
       if cur_y.query_f(0, l as usize) + r * 2 > l {
         break;
@@ -136,17 +138,33 @@ fn make_line(
   cur_y: &mut RMQRUQ,
   rp: &mut Vec<(usize, (i64, i64))>,
   res: &mut Vec<(i64, i64, i64)>,
+  rev: bool,
 ) -> i64 {
+  fn get_z(z: i64, rev: bool, l: i64) -> i64 {
+    if rev {
+      l - z
+    } else {
+      z
+    }
+  }
+
   let mut max_x = cur_x;
   let mut cur_z = 0;
   loop {
     if let Some(&(i, (r, _))) = rp.last() {
-      let query = cur_y.query_f(cur_z as usize, (cur_z + r * 2) as usize);
+      let query = cur_y.query_f(
+        get_z(cur_z, rev, l) as usize,
+        get_z(cur_z + r * 2, rev, l) as usize,
+      );
       if cur_z + r * 2 <= l && query + r * 2 <= l && cur_x + r * 2 <= l {
         rp.pop();
-        res[i] = (cur_x + r, query + r, cur_z + r);
+        res[i] = (cur_x + r, query + r, get_z(cur_z + r, rev, l));
         max_x = std::cmp::max(max_x, cur_x + r * 2);
-        cur_y.update_f(cur_z as usize, (cur_z + r * 2) as usize, query + r * 2);
+        cur_y.update_f(
+          get_z(cur_z, rev, l) as usize,
+          get_z(cur_z + r * 2, rev, l) as usize,
+          query + r * 2,
+        );
         cur_z += r * 2;
       } else {
         break;
