@@ -79,7 +79,7 @@ fn main() {
 fn solve(input: String) -> String {
   input!(input=>(l:i64 n:usize m:usize){n;rp:(i64,i64)}{m;abcd:(#,#,i64,i64)});
   let mut rp = rp.into_iter().enumerate().collect::<Vec<_>>();
-  rp.sort_by_key(|&(_, (x, _))| x);
+  rp.sort_by_key(|&(_, (r, p))| (r, p));
   rp.reverse();
 
   let mut res = Vec::with_capacity(n);
