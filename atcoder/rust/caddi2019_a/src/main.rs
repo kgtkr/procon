@@ -147,18 +147,18 @@ fn make_line(
 ) -> i64 {
   let rev = true;
   let mut max_x = cur_x;
-  let mut cur_z = if !rev { 0 } else { l - 1 };
+  let mut cur_z = if !rev { 0 } else { l };
   loop {
     if let Some(&(i, (r, _))) = rp.last() {
       let query = if !rev {
         cur_y.query_f((cur_z) as usize, (cur_z + r * 2) as usize)
       } else {
-        cur_y.query_f((cur_z - r * 2 + 1) as usize, (cur_z + 1) as usize)
+        cur_y.query_f((cur_z - r * 2) as usize, (cur_z) as usize)
       };
       if (if !rev {
         cur_z + r * 2 <= l
       } else {
-        cur_z - r * 2 >= -1
+        cur_z - r * 2 >= 0
       }) && query + r * 2 <= l
         && cur_x + r * 2 <= l
       {
@@ -172,11 +172,7 @@ fn make_line(
         if !rev {
           cur_y.update_f((cur_z) as usize, (cur_z + r * 2) as usize, query + r * 2);
         } else {
-          cur_y.update_f(
-            (cur_z - r * 2 + 1) as usize,
-            (cur_z + 1) as usize,
-            query + r * 2,
-          );
+          cur_y.update_f((cur_z - r * 2) as usize, (cur_z) as usize, query + r * 2);
         }
         cur_z += if !rev { r * 2 } else { -r * 2 };
       } else {
