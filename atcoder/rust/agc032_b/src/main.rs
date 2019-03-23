@@ -109,11 +109,6 @@ fn solve(input: String) -> String {
             res.push((b, d));
         }
 
-        let i = n / 2 - 1;
-        let a = n - i;
-        let b = i + 1;
-        let c = n - (0 + 1);
-        let d = 0 + (1 + 1);
         res.push((n / 2, 1));
         res.push((n / 2, n));
         res.push((n / 2 + 1, 1));
