@@ -1,5 +1,6 @@
 extern crate core;
 
+use std::collections::HashMap;
 use std::io::{self, Read};
 
 #[macro_export]
@@ -77,15 +78,49 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-  input!(input=>(l:i64 n:usize m:usize){n;rp:(i64,i64)}{m;abcd:(#,#,i64,i64)});
+  input!(input=>(l:i64 n:usize m:usize){n;rp:(i64,i64)}{m;abcd:(@,@,i64,i64)});
   let mut rp = rp.into_iter().enumerate().collect::<Vec<_>>();
-  rp.sort_by_key(|&(_, (r, p))| (r, p));
-  rp.reverse();
+  /*rp.sort_by_key(|&(_, (r, p))| (r, p));
+  rp.reverse();*/
 
   let mut res = Vec::with_capacity(n);
   res.resize(n, (-1, -1, -1));
 
-  make_space(l, &mut rp, &mut res);
+  let mut abcd = abcd;
+  abcd.sort_by_key(|&(_, _, _, x)| x);
+  abcd.reverse();
+  let abcd = abcd.into_iter().take(10000).collect::<Vec<_>>();
+
+  let mut rp2 = Vec::with_capacity(n);
+  let mut map = HashMap::with_capacity(n);
+  for x in rp {
+    map.insert(x.0, x);
+  }
+
+  for (a, b, _, _) in abcd {
+    let a = map.get(&a).cloned();
+    let b = map.get(&b).cloned();
+
+    match (a, b) {
+      (Some(a), Some(b)) => {
+        map.remove(&a.0);
+        map.remove(&b.0);
+        rp2.push(b);
+        rp2.push(b);
+      }
+      _ => {}
+    }
+  }
+
+  let mut rp = map.into_iter().map(|(_, x)| x).collect::<Vec<_>>();
+  rp.sort_by_key(|&(_, (r, p))| (r, p));
+  rp.reverse();
+
+  for x in rp {
+    rp2.push(x);
+  }
+
+  make_space(l, &mut rp2, &mut res);
 
   res
     .into_iter()
