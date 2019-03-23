@@ -108,17 +108,16 @@ fn solve(input: String) -> String {
             res.push((b, c));
             res.push((b, d));
         }
-        if n != 4 {
-            let i = n / 2 - 1;
-            let a = n - i;
-            let b = i + 1;
-            let c = n - (0 + 1);
-            let d = 0 + (1 + 1);
-            res.push((a, c));
-            res.push((a, d));
-            res.push((b, c));
-            res.push((b, d));
-        }
+
+        let i = n / 2 - 1;
+        let a = n - i;
+        let b = i + 1;
+        let c = n - (0 + 1);
+        let d = 0 + (1 + 1);
+        res.push((n / 2, 1));
+        res.push((n / 2, n));
+        res.push((n / 2 + 1, 1));
+        res.push((n / 2 + 1, n));
     } else {
         for i in 0..((n - 1) / 2 - 1) {
             let a = (n - 1) - i;
