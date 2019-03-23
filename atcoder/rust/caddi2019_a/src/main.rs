@@ -115,13 +115,12 @@ fn make_side(
   res: &mut Vec<(i64, i64, i64)>,
 ) -> i64 {
   let mut max_x = cur_x;
-  let mut cur_y = 0;
+  let mut cur_y = RMQRUQ::new(l as usize);
   loop {
     if let Some(&(_, (r, _))) = rp.last() {
-      let (x, y) = make_line(l, cur_x, cur_y, rp, res);
-      cur_y = y;
+      let x = make_line(l, cur_x, &mut cur_y, rp, res);
       max_x = std::cmp::max(max_x, x);
-      if cur_y + r * 2 > l {
+      if cur_y.query_f(0, l as usize) + r * 2 > l {
         break;
       }
     } else {
@@ -134,20 +133,20 @@ fn make_side(
 fn make_line(
   l: i64,
   cur_x: i64,
-  cur_y: i64,
+  cur_y: &mut RMQRUQ,
   rp: &mut Vec<(usize, (i64, i64))>,
   res: &mut Vec<(i64, i64, i64)>,
-) -> (i64, i64) {
+) -> i64 {
   let mut max_x = cur_x;
-  let mut max_y = cur_y;
   let mut cur_z = 0;
   loop {
     if let Some(&(i, (r, _))) = rp.last() {
-      if cur_z + r * 2 <= l && cur_y + r * 2 <= l && cur_x + r * 2 <= l {
+      let query = cur_y.query_f(cur_z as usize, (cur_z + r * 2) as usize);
+      if cur_z + r * 2 <= l && query + r * 2 <= l && cur_x + r * 2 <= l {
         rp.pop();
-        res[i] = (cur_x + r, cur_y + r, cur_z + r);
+        res[i] = (cur_x + r, query + r, cur_z + r);
         max_x = std::cmp::max(max_x, cur_x + r * 2);
-        max_y = std::cmp::max(max_y, cur_y + r * 2);
+        cur_y.update_f(cur_z as usize, (cur_z + r * 2) as usize, query + r * 2);
         cur_z += r * 2;
       } else {
         break;
@@ -157,5 +156,83 @@ fn make_line(
     }
   }
 
-  (max_x, max_y)
+  max_x
+}
+
+//直径2
+//0,1
+
+struct RMQRUQ {
+  n: usize,
+  dat: Vec<i64>,
+  lazy: Vec<i64>,
+}
+
+impl RMQRUQ {
+  fn new(n_: usize) -> RMQRUQ {
+    let mut n = 1;
+    while n < n_ {
+      n *= 2;
+    }
+    let mut dat = Vec::with_capacity(n * 2);
+    dat.resize(n * 2, 0);
+    let mut lazy = Vec::with_capacity(n * 2);
+    lazy.resize(n * 2, 0);
+    RMQRUQ {
+      n: n,
+      dat: dat,
+      lazy: lazy,
+    }
+  }
+
+  fn eval(&mut self, len: usize, k: usize) {
+    if self.lazy[k] == 0 {
+      return;
+    }
+    if k * 2 + 1 < self.n * 2 - 1 {
+      self.lazy[2 * k + 1] = self.lazy[k];
+      self.lazy[2 * k + 2] = self.lazy[k];
+    }
+    self.dat[k] = self.lazy[k];
+    self.lazy[k] = 0;
+  }
+
+  // [a, b)
+  fn update(&mut self, a: usize, b: usize, x: i64, k: usize, l: usize, r: usize) -> i64 {
+    self.eval(r - l, k);
+    if b <= l || r <= a {
+      return self.dat[k];
+    }
+    if a <= l && r <= b {
+      self.lazy[k] = x;
+      return self.lazy[k];
+    }
+    self.dat[k] = std::cmp::max(
+      self.update(a, b, x, 2 * k + 1, l, (l + r) / 2),
+      self.update(a, b, x, 2 * k + 2, (l + r) / 2, r),
+    );
+    self.dat[k]
+  }
+  fn update_f(&mut self, a: usize, b: usize, x: i64) -> i64 {
+    let n = self.n;
+    return self.update(a, b, x, 0, 0, n);
+  }
+
+  // [a, b)
+  fn query(&mut self, a: usize, b: usize, k: usize, l: usize, r: usize) -> i64 {
+    self.eval(r - l, k);
+    if b <= l || r <= a {
+      return 0;
+    }
+    if a <= l && r <= b {
+      return self.dat[k];
+    }
+    let vl = self.query(a, b, 2 * k + 1, l, (l + r) / 2);
+    let vr = self.query(a, b, 2 * k + 2, (l + r) / 2, r);
+    return std::cmp::max(vl, vr);
+  }
+  fn query_f(&mut self, a: usize, b: usize) -> i64 {
+    let n = self.n;
+    return self.query(a, b, 0, 0, n);
+  }
 }
