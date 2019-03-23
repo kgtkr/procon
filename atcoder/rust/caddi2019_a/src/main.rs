@@ -132,6 +132,11 @@ fn make_side(
   max_x
 }
 
+//len:3
+//cur:1
+//r:1
+//[0,1,2]
+
 fn make_line(
   l: i64,
   cur_x: i64,
@@ -140,6 +145,7 @@ fn make_line(
   res: &mut Vec<(i64, i64, i64)>,
   rev: bool,
 ) -> i64 {
+  let rev = true;
   let mut max_x = cur_x;
   let mut cur_z = if !rev { 0 } else { l - 1 };
   loop {
@@ -147,12 +153,12 @@ fn make_line(
       let query = if !rev {
         cur_y.query_f((cur_z) as usize, (cur_z + r * 2) as usize)
       } else {
-        cur_y.query_f((cur_z - r * 2) as usize, (cur_z) as usize)
+        cur_y.query_f((cur_z - r * 2 + 1) as usize, (cur_z + 1) as usize)
       };
       if (if !rev {
         cur_z + r * 2 <= l
       } else {
-        cur_z - r * 2 >= 0
+        cur_z - r * 2 >= -1
       }) && query + r * 2 <= l
         && cur_x + r * 2 <= l
       {
@@ -166,7 +172,11 @@ fn make_line(
         if !rev {
           cur_y.update_f((cur_z) as usize, (cur_z + r * 2) as usize, query + r * 2);
         } else {
-          cur_y.update_f((cur_z - r * 2) as usize, (cur_z) as usize, query + r * 2);
+          cur_y.update_f(
+            (cur_z - r * 2 + 1) as usize,
+            (cur_z + 1) as usize,
+            query + r * 2,
+          );
         }
         cur_z += if !rev { r * 2 } else { -r * 2 };
       } else {
