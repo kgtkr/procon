@@ -77,9 +77,22 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(n:i64 k:i64));
+
+    fn get_n(mut x:i64,k:i64)->i64{
+      let mut i=0;
+      while x<k{
+        x*=2;
+        i+=1;
+      }
+      i
+    }
+
+    let mut res=0f64;
+    for i in 1..n+1{
+     res+=1f64/2i64.pow(get_n(i,k) as u32) as f64;
+    }
+    (res/n as f64).to_string()
 }
 
 macro_rules! tests {
@@ -96,9 +109,6 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "3 10\n" => "0.145833333333\n",
+    test2: "100000 5\n" => "0.999973749998\n",
 }
