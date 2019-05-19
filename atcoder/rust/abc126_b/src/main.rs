@@ -77,9 +77,17 @@ fn main() {
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+    input!(input=>(s:#));
+    let a=s.chars().take(2).collect::<String>().parse::<i64>().unwrap();
+    let b=s.chars().skip(2).take(2).collect::<String>().parse::<i64>().unwrap();
+    let x=1<=a&&a<=12;
+    let y=1<=b&&b<=12;
+    match (x,y){
+      (true,true)=>"AMBIGUOUS",
+      (true,false)=>"MMYY",
+      (false,true)=>"YYMM",
+      (false,false)=>"NA",
+    }.to_string()
 }
 
 macro_rules! tests {
@@ -96,9 +104,7 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+    test1: "1905\n" => "YYMM\n",
+    test2: "0112\n" => "AMBIGUOUS\n",
+    test3: "1700\n" => "NA\n",
 }
