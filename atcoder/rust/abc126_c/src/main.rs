@@ -79,20 +79,20 @@ fn main() {
 fn solve(input: String) -> String {
     input!(input=>(n:i64 k:i64));
 
-    fn get_n(mut x:i64,k:i64)->i64{
-      let mut i=0;
-      while x<k{
-        x*=2;
-        i+=1;
-      }
-      i
+    fn get_n(mut x: i64, k: i64) -> i64 {
+        let mut i = 0;
+        while x < k {
+            x *= 2;
+            i += 1;
+        }
+        i
     }
 
-    let mut res=0f64;
-    for i in 1..n+1{
-     res+=1f64/2i64.pow(get_n(i,k) as u32) as f64;
+    let mut res = 0f64;
+    for i in 1..n + 1 {
+        res += 1f64 / 2i64.pow(get_n(i, k) as u32) as f64;
     }
-    (res/n as f64).to_string()
+    (res / n as f64).to_string()
 }
 
 macro_rules! tests {

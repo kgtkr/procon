@@ -26,22 +26,22 @@ macro_rules! line_parse {
 }
 
 macro_rules! value_def {
-  ($line:expr, $name:ident, $t:tt) => {
-    let $name = value!($line, $t);
-  };
+    ($line:expr, $name:ident, $t:tt) => {
+        let $name = value!($line, $t);
+    };
 }
 
 macro_rules! values_def {
-  ($lines:expr, $n:expr, $name:ident, $t:tt) => {
-    let $name = {
-      let mut vec = Vec::new();
-      for i in 0..$n {
-        let mut next = $lines.next().unwrap().split_whitespace();
-        vec.push(value!(next, $t));
-      }
-      vec
+    ($lines:expr, $n:expr, $name:ident, $t:tt) => {
+        let $name = {
+            let mut vec = Vec::new();
+            for i in 0..$n {
+                let mut next = $lines.next().unwrap().split_whitespace();
+                vec.push(value!(next, $t));
+            }
+            vec
+        };
     };
-  };
 }
 
 macro_rules! value {
@@ -71,25 +71,30 @@ macro_rules! value {
 }
 
 fn main() {
-  let mut input = String::new();
-  io::stdin().read_to_string(&mut input).unwrap();
-  let output = solve(input.trim().to_string());
-  println!("{}", output);
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let output = solve(input.trim().to_string());
+    println!("{}", output);
 }
 
 fn solve(input: String) -> String {
-  input!(input=>(n:usize k:usize)(s:#));
-  let s = s.chars().collect::<Vec<char>>();
-  let mut res = String::new();
+    input!(input=>(n:usize k:usize)(s:#));
+    let s = s.chars().collect::<Vec<char>>();
+    let mut res = String::new();  
 
-  for i in 0..n {
-    if k - 1 == i {
-      res.push_str(&s[i].to_lowercase().to_string());
-    } else {
-      res.push(s[i]);
+    for i in 0..n {
+        if k - 1 == i {
+            res.push(match s[i] {
+                'A' => 'a',
+                'B' => 'b',
+                'C' => 'c',
+                _ => unimplemented!(),
+            });
+        } else {
+            res.push(s[i]);
+        }
     }
-  }
-  res.chars().collect::<String>()
+    res.chars().collect::<String>()
 }
 
 macro_rules! tests {

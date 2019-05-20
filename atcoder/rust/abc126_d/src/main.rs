@@ -25,22 +25,22 @@ macro_rules! line_parse {
 }
 
 macro_rules! value_def {
-  ($line:expr, $name:ident, $t:tt) => {
-    let $name = value!($line, $t);
-  };
+    ($line:expr, $name:ident, $t:tt) => {
+        let $name = value!($line, $t);
+    };
 }
 
 macro_rules! values_def {
-  ($lines:expr, $n:expr, $name:ident, $t:tt) => {
-    let $name = {
-      let mut vec = Vec::new();
-      for i in 0..$n {
-        let mut next = $lines.next().unwrap().split_whitespace();
-        vec.push(value!(next, $t));
-      }
-      vec
+    ($lines:expr, $n:expr, $name:ident, $t:tt) => {
+        let $name = {
+            let mut vec = Vec::new();
+            for i in 0..$n {
+                let mut next = $lines.next().unwrap().split_whitespace();
+                vec.push(value!(next, $t));
+            }
+            vec
+        };
     };
-  };
 }
 
 macro_rules! value {
@@ -70,39 +70,38 @@ macro_rules! value {
 }
 
 fn main() {
-  let mut input = String::new();
-  io::stdin().read_to_string(&mut input).unwrap();
-  let output = solve(input.trim().to_string());
-  println!("{}", output);
+    let mut input = String::new();
+    io::stdin().read_to_string(&mut input).unwrap();
+    let output = solve(input.trim().to_string());
+    println!("{}", output);
 }
 
 fn solve(input: String) -> String {
-  input!(input=>(n:usize){n-1;list:(@,@,i64)});
-  let mut map = Vec::new();
-  map.resize(n, Vec::new());
-  let mut res = Vec::new();
-  res.resize(n, false);
-  for (a, b, c) in list {
-    map[a].push((b, c % 2 == 0));
-    map[b].push((a, c % 2 == 0));
-  }
-  f(&mut res, n + 10, &map, 0, false);
-  res
-    .into_iter()
-    .map(|x| (if x { 1 } else { 0 }).to_string())
-    .collect::<Vec<_>>()
-    .join("\n")
-    .to_string()
+    input!(input=>(n:usize){n-1;list:(@,@,i64)});
+    let mut map = Vec::new();
+    map.resize(n, Vec::new());
+    let mut res = Vec::new();
+    res.resize(n, false);
+    for (a, b, c) in list {
+        map[a].push((b, c % 2 == 0));
+        map[b].push((a, c % 2 == 0));
+    }
+    f(&mut res, n + 10, &map, 0, false);
+    res.into_iter()
+        .map(|x| (if x { 1 } else { 0 }).to_string())
+        .collect::<Vec<_>>()
+        .join("\n")
+        .to_string()
 }
 
 fn f(res: &mut Vec<bool>, old: usize, map: &Vec<Vec<(usize, bool)>>, i: usize, c: bool) {
-  for &(a, w) in &map[i] {
-    if a != old {
-      let color = if w { c } else { !c };
-      res[a] = color;
-      f(res, i, map, a, color);
+    for &(a, w) in &map[i] {
+        if a != old {
+            let color = if w { c } else { !c };
+            res[a] = color;
+            f(res, i, map, a, color);
+        }
     }
-  }
 }
 
 macro_rules! tests {
