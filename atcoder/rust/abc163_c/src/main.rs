@@ -25,22 +25,22 @@ macro_rules! line_parse {
 }
 
 macro_rules! value_def {
-    ($line:expr, $name:ident, $t:tt) => {
-        let $name = value!($line, $t);
-    };
+  ($line:expr, $name:ident, $t:tt) => {
+    let $name = value!($line, $t);
+  };
 }
 
 macro_rules! values_def {
-    ($lines:expr, $n:expr, $name:ident, $t:tt) => {
-        let $name = {
-            let mut vec = Vec::new();
-            for i in 0..$n {
-                let mut next = $lines.next().unwrap().split_whitespace();
-                vec.push(value!(next, $t));
-            }
-            vec
-        };
+  ($lines:expr, $n:expr, $name:ident, $t:tt) => {
+    let $name = {
+      let mut vec = Vec::new();
+      for i in 0..$n {
+        let mut next = $lines.next().unwrap().split_whitespace();
+        vec.push(value!(next, $t));
+      }
+      vec
     };
+  };
 }
 
 macro_rules! value {
@@ -70,16 +70,25 @@ macro_rules! value {
 }
 
 fn main() {
-    let mut input = String::new();
-    io::stdin().read_to_string(&mut input).unwrap();
-    let output = solve(input.trim().to_string());
-    println!("{}", output);
+  let mut input = String::new();
+  io::stdin().read_to_string(&mut input).unwrap();
+  let output = solve(input.trim().to_string());
+  println!("{}", output);
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+  input!(input=>(n:usize)(list:[@]));
+  let mut sum = Vec::with_capacity(n);
+  sum.resize(n, 0);
+  for x in list {
+    sum[x] += 1;
+  }
+  sum
+    .into_iter()
+    .map(|x| x.to_string())
+    .collect::<Vec<_>>()
+    .join("\n")
+    .to_string()
 }
 
 macro_rules! tests {
@@ -94,11 +103,8 @@ macro_rules! tests {
         }
     }
 }
-
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+  test1: "5\n1 1 2 2\n" => "2\n2\n0\n0\n0\n",
+  test2: "10\n1 1 1 1 1 1 1 1 1\n" => "9\n0\n0\n0\n0\n0\n0\n0\n0\n0\n",
+  test3: "7\n1 2 3 4 5 6\n" => "1\n1\n1\n1\n1\n1\n0\n",
 }
