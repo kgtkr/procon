@@ -25,22 +25,22 @@ macro_rules! line_parse {
 }
 
 macro_rules! value_def {
-    ($line:expr, $name:ident, $t:tt) => {
-        let $name = value!($line, $t);
-    };
+  ($line:expr, $name:ident, $t:tt) => {
+    let $name = value!($line, $t);
+  };
 }
 
 macro_rules! values_def {
-    ($lines:expr, $n:expr, $name:ident, $t:tt) => {
-        let $name = {
-            let mut vec = Vec::new();
-            for i in 0..$n {
-                let mut next = $lines.next().unwrap().split_whitespace();
-                vec.push(value!(next, $t));
-            }
-            vec
-        };
+  ($lines:expr, $n:expr, $name:ident, $t:tt) => {
+    let $name = {
+      let mut vec = Vec::new();
+      for i in 0..$n {
+        let mut next = $lines.next().unwrap().split_whitespace();
+        vec.push(value!(next, $t));
+      }
+      vec
     };
+  };
 }
 
 macro_rules! value {
@@ -70,16 +70,57 @@ macro_rules! value {
 }
 
 fn main() {
-    let mut input = String::new();
-    io::stdin().read_to_string(&mut input).unwrap();
-    let output = solve(input.trim().to_string());
-    println!("{}", output);
+  let mut input = String::new();
+  io::stdin().read_to_string(&mut input).unwrap();
+  let output = solve(input.trim().to_string());
+  println!("{}", output);
 }
 
+/*
+0-5から2つ選ぶ時
+最も大きい2つ-最も小さい2つ+1
+n+(n-1) - 0+1 + 1
+
+9-1+1
+
+0 1
+0 2
+0 3
+0 4
+0 5
+
+1 5
+2 5
+3 5
+4 5
+
+0-5から3つ選ぶ時
+最も小さい3つから最も大きい3つ
+
+0 1 2 - 3
+0 1 3 - 4
+0 1 4 - 5
+0 1 5 - 6
+
+1 2 5 - 7
+1 3 5 - 8
+1 4 5 - 9
+
+2 3 5 - 10
+*/
+
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+  input!(input=>(n:i64 k:i64));
+  let mut result = 0;
+  for x in k..=n + 1 {
+    result = add(result, (x * n - x * (x - 1) / 2) - x * (x - 1) / 2 + 1);
+  }
+  result.to_string()
+}
+const MOD: i64 = 1000000007;
+
+pub fn add(a: i64, b: i64) -> i64 {
+  (a + b) % MOD
 }
 
 macro_rules! tests {
@@ -94,11 +135,8 @@ macro_rules! tests {
         }
     }
 }
-
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+  test1: "3 2\n" => "10\n",
+  test2: "200000 200001\n" => "1\n",
+  test3: "141421 35623\n" => "220280457\n",
 }
