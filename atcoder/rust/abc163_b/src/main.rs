@@ -25,22 +25,22 @@ macro_rules! line_parse {
 }
 
 macro_rules! value_def {
-    ($line:expr, $name:ident, $t:tt) => {
-        let $name = value!($line, $t);
-    };
+  ($line:expr, $name:ident, $t:tt) => {
+    let $name = value!($line, $t);
+  };
 }
 
 macro_rules! values_def {
-    ($lines:expr, $n:expr, $name:ident, $t:tt) => {
-        let $name = {
-            let mut vec = Vec::new();
-            for i in 0..$n {
-                let mut next = $lines.next().unwrap().split_whitespace();
-                vec.push(value!(next, $t));
-            }
-            vec
-        };
+  ($lines:expr, $n:expr, $name:ident, $t:tt) => {
+    let $name = {
+      let mut vec = Vec::new();
+      for i in 0..$n {
+        let mut next = $lines.next().unwrap().split_whitespace();
+        vec.push(value!(next, $t));
+      }
+      vec
     };
+  };
 }
 
 macro_rules! value {
@@ -70,16 +70,15 @@ macro_rules! value {
 }
 
 fn main() {
-    let mut input = String::new();
-    io::stdin().read_to_string(&mut input).unwrap();
-    let output = solve(input.trim().to_string());
-    println!("{}", output);
+  let mut input = String::new();
+  io::stdin().read_to_string(&mut input).unwrap();
+  let output = solve(input.trim().to_string());
+  println!("{}", output);
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+  input!(input=>(n:i64 m:usize)(list:[i64]));
+  std::cmp::max(-1, n - list.into_iter().sum::<i64>()).to_string()
 }
 
 macro_rules! tests {
@@ -94,11 +93,9 @@ macro_rules! tests {
         }
     }
 }
-
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+  test1: "41 2\n5 6\n" => "30\n",
+  test2: "10 2\n5 6\n" => "-1\n",
+  test3: "11 2\n5 6\n" => "0\n",
+  test4: "314 15\n9 26 5 35 8 9 79 3 23 8 46 2 6 43 3\n" => "9\n",
 }
