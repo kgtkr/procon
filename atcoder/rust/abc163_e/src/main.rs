@@ -79,42 +79,62 @@ fn main() {
 
 fn solve(input: String) -> String {
   input!(input=>(n:usize)(list:[i64]));
-  f(&list, &mut HashMap::new(), 0, {
-    let mut v = Vec::with_capacity(n);
-    v.resize(n, false);
-    v
-  })
+  f(
+    n,
+    &list,
+    &mut {
+      let mut v = Vec::with_capacity(n);
+      v.resize(n, HashMap::new());
+      v
+    },
+    0,
+    [0; 32],
+  )
   .to_string()
+}
+
+fn bit_get(v: &[u64; 32], i: usize) -> bool {
+  let w = i / 64;
+  let b = i % 64;
+  (v[w] & (1 << b)) != 0
+}
+
+fn bit_set(v: &mut [u64; 32], i: usize, x: bool) {
+  let w = i / 64;
+  let b = i % 64;
+  let flag = 1 << b;
+  let val = if x { v[w] | flag } else { v[w] & !flag };
+  v[w] = val;
 }
 
 // リスト、次並べる場所、各幼児が利用済みか、嬉しさの合計
 // i以降の席に並べるときの嬉しさの最大値
 fn f(
+  n: usize,
   list: &Vec<i64>,
-  memo: &mut HashMap<(usize, Vec<bool>), i64>,
+  memo: &mut Vec<HashMap<[u64; 32], i64>>,
   i: usize,
-  used: Vec<bool>,
+  used: [u64; 32],
 ) -> i64 {
-  if let Some(res) = memo.get(&(i, used.clone())) {
+  if i >= n {
+    return 0;
+  }
+  if let Some(res) = memo[i].get(&used) {
     return *res;
   }
 
-  let res = used
-    .clone()
-    .into_iter()
-    .enumerate()
-    .filter(|(_, u)| !u)
-    .map(|(x, _)| x)
-    .map(|p| {
-      // pをiに移動する時
-      let mut used = used.clone();
-      used[p] = true;
-      list[p] * (i as i64 - p as i64).abs() + f(list, memo, i + 1, used)
-    })
-    .max()
-    .unwrap_or(0);
+  let mut res = 0;
+  for p in (0..n).filter(|i| !bit_get(&used, *i)) {
+    // pをiに移動する時
+    let mut used = used.clone();
+    bit_set(&mut used, p, true);
+    res = std::cmp::max(
+      res,
+      list[p] * (i as i64 - p as i64).abs() + f(n, list, memo, i + 1, used),
+    );
+  }
 
-  memo.insert((i, used), res);
+  memo[i].insert(used, res);
   res
 }
 
