@@ -70,39 +70,68 @@ fn main() {
 }
 fn solve(input: String) -> String {
   input!(input=>(n:usize)(list:[i64]));
-  f(&list, &mut HashMap::new(), 0, {
-    let mut v = Vec::with_capacity(n);
-    v.resize(n, false);
+  let mut list = list.into_iter().enumerate().collect::<Vec<_>>();
+  list.sort_by_key(|(_, x)| *x);
+  list.reverse();
+
+  let mut memo = {
+    let mut v = Vec::with_capacity(n + 1);
+    v.resize(n + 1, {
+      let mut v = Vec::with_capacity(n + 1);
+      v.resize(n + 1, None);
+      v
+    });
     v
-  })
-  .to_string()
-}
-// リスト、次並べる場所、各幼児が利用済みか、嬉しさの合計
-// i以降の席に並べるときの嬉しさの最大値
-fn f(
-  list: &Vec<i64>,
-  memo: &mut HashMap<(usize, Vec<bool>), i64>,
-  i: usize,
-  used: Vec<bool>,
-) -> i64 {
-  if let Some(res) = memo.get(&(i, used.clone())) {
-    return *res;
-  }
-  let res = used
-    .clone()
-    .into_iter()
-    .enumerate()
-    .filter(|(_, u)| !u)
-    .map(|(x, _)| x)
-    .map(|p| {
-      // pをiに移動する時
-      let mut used = used.clone();
-      used[p] = true;
-      list[p] * (i as i64 - p as i64).abs() + f(list, memo, i + 1, used)
+  };
+  (0..=n)
+    .map(|l| {
+      let r = n - l;
+      f(n, &list, &mut memo, l, r)
     })
     .max()
-    .unwrap_or(0);
-  memo.insert((i, used), res);
+    .unwrap()
+    .to_string()
+}
+
+fn calc_happy((from, active): (usize, i64), to: usize) -> i64 {
+  active * (from as i64 - to as i64).abs()
+}
+
+// 左にl人、右にr人移動するときの最大値
+// リスト、次並べる場所、各幼児が利用済みか、嬉しさの合計
+// i以降の席に並べるときの嬉しさの最大値
+// 左に移動をl、右に移動をr
+fn f(
+  n: usize,
+  list: &Vec<(usize, i64)>,
+  memo: &mut Vec<Vec<Option<i64>>>,
+  l: usize,
+  r: usize,
+) -> i64 {
+  if let Some(res) = memo[l][r] {
+    return res;
+  }
+
+  let res = match (l, r) {
+    (0, 0) => 0,
+    (1, 0) => calc_happy(list[0], 0),
+    (0, 1) => calc_happy(list[0], n - 1),
+    (l, r) => std::cmp::max(
+      if l != 0 {
+        f(n, list, memo, l - 1, r) + calc_happy(list[l + r - 1], l - 1)
+      } else {
+        0
+      },
+      if r != 0 {
+        f(n, list, memo, l, r - 1) + calc_happy(list[l + r - 1], n - r)
+      } else {
+        0
+      },
+    ),
+  };
+
+  memo[l][r] = Some(res);
+
   res
 }
 macro_rules! tests {
