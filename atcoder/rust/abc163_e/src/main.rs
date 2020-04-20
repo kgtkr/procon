@@ -25,22 +25,22 @@ macro_rules! line_parse {
 }
 
 macro_rules! value_def {
-    ($line:expr, $name:ident, $t:tt) => {
-        let $name = value!($line, $t);
-    };
+  ($line:expr, $name:ident, $t:tt) => {
+    let $name = value!($line, $t);
+  };
 }
 
 macro_rules! values_def {
-    ($lines:expr, $n:expr, $name:ident, $t:tt) => {
-        let $name = {
-            let mut vec = Vec::new();
-            for i in 0..$n {
-                let mut next = $lines.next().unwrap().split_whitespace();
-                vec.push(value!(next, $t));
-            }
-            vec
-        };
+  ($lines:expr, $n:expr, $name:ident, $t:tt) => {
+    let $name = {
+      let mut vec = Vec::new();
+      for i in 0..$n {
+        let mut next = $lines.next().unwrap().split_whitespace();
+        vec.push(value!(next, $t));
+      }
+      vec
     };
+  };
 }
 
 macro_rules! value {
@@ -70,16 +70,39 @@ macro_rules! value {
 }
 
 fn main() {
-    let mut input = String::new();
-    io::stdin().read_to_string(&mut input).unwrap();
-    let output = solve(input.trim().to_string());
-    println!("{}", output);
+  let mut input = String::new();
+  io::stdin().read_to_string(&mut input).unwrap();
+  let output = solve(input.trim().to_string());
+  println!("{}", output);
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+  input!(input=>(n:usize)(list:[i64]));
+  f(&list, 0, {
+    let mut v = Vec::with_capacity(n);
+    v.resize(n, false);
+    v
+  })
+  .to_string()
+}
+
+// リスト、次並べる場所、各幼児が利用済みか、嬉しさの合計
+// i以降の席に並べるときの嬉しさの最大値
+fn f(list: &Vec<i64>, i: usize, used: Vec<bool>) -> i64 {
+  return used
+    .clone()
+    .into_iter()
+    .enumerate()
+    .filter(|(_, u)| !u)
+    .map(|(x, _)| x)
+    .map(|p| {
+      // pをiに移動する時
+      let mut used = used.clone();
+      used[p] = true;
+      list[p] * (i as i64 - p as i64).abs() + f(list, i + 1, used)
+    })
+    .max()
+    .unwrap_or(0);
 }
 
 macro_rules! tests {
@@ -94,11 +117,8 @@ macro_rules! tests {
         }
     }
 }
-
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+  test1: "4\n1 3 4 2\n" => "20\n",
+  test2: "6\n5 5 6 1 1 1\n" => "58\n",
+  test3: "6\n8 6 9 1 2 1\n" => "85\n",
 }
