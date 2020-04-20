@@ -1,5 +1,6 @@
 extern crate core;
 
+use std::collections::HashMap;
 use std::io::{self, Read};
 
 #[macro_export]
@@ -78,7 +79,7 @@ fn main() {
 
 fn solve(input: String) -> String {
   input!(input=>(n:usize)(list:[i64]));
-  f(&list, 0, {
+  f(&list, &mut HashMap::new(), 0, {
     let mut v = Vec::with_capacity(n);
     v.resize(n, false);
     v
@@ -88,8 +89,17 @@ fn solve(input: String) -> String {
 
 // リスト、次並べる場所、各幼児が利用済みか、嬉しさの合計
 // i以降の席に並べるときの嬉しさの最大値
-fn f(list: &Vec<i64>, i: usize, used: Vec<bool>) -> i64 {
-  return used
+fn f(
+  list: &Vec<i64>,
+  memo: &mut HashMap<(usize, Vec<bool>), i64>,
+  i: usize,
+  used: Vec<bool>,
+) -> i64 {
+  if let Some(res) = memo.get(&(i, used.clone())) {
+    return *res;
+  }
+
+  let res = used
     .clone()
     .into_iter()
     .enumerate()
@@ -99,10 +109,13 @@ fn f(list: &Vec<i64>, i: usize, used: Vec<bool>) -> i64 {
       // pをiに移動する時
       let mut used = used.clone();
       used[p] = true;
-      list[p] * (i as i64 - p as i64).abs() + f(list, i + 1, used)
+      list[p] * (i as i64 - p as i64).abs() + f(list, memo, i + 1, used)
     })
     .max()
     .unwrap_or(0);
+
+  memo.insert((i, used), res);
+  res
 }
 
 macro_rules! tests {
