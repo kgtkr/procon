@@ -97,15 +97,15 @@ fn solve(input: String) -> String {
         .map(|(i, x)| (i as i64 + 1, x))
         .collect::<Vec<_>>();
 
-    let diff_to_n = list.clone().into_iter().map(|(n, a)| (n - a, n)).fold(
-        HashMap::new(),
-        |mut acc, (key, v)| {
-            acc.entry(key).or_insert(Vec::new()).push(v);
-            acc
-        },
-    );
+    let diff_to_n =
+        list.iter()
+            .map(|(n, a)| (n - a, n))
+            .fold(HashMap::new(), |mut acc, (key, v)| {
+                acc.entry(key).or_insert(Vec::new()).push(v);
+                acc
+            });
 
-    list.into_iter()
+    list.iter()
         .map(|(n, a)| {
             diff_to_n
                 .get(&(n + a))
