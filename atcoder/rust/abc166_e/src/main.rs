@@ -109,7 +109,7 @@ fn solve(input: String) -> String {
         .map(|(n, a)| {
             diff_to_n
                 .get(&(n + a))
-                .map(|xs| xs.iter().filter(|n2| **n2 > n).count())
+                .map(|xs| larger_count(xs, &n))
                 .unwrap_or(0)
         })
         .sum::<usize>()
@@ -132,4 +132,46 @@ tests! {
     test1: "6\n2 3 3 1 3 1\n" => "3\n",
     test2: "6\n5 2 4 2 8 8\n" => "0\n",
     test3: "32\n3 1 4 1 5 9 2 6 5 3 5 8 9 7 9 3 2 3 8 4 6 2 6 4 3 3 8 3 2 7 9 5\n" => "22\n",
+}
+
+//より大きい
+pub fn larger_count<T: Ord>(vec: &Vec<T>, val: &T) -> usize {
+    vec.len() - upper_bound(vec, 0, vec.len(), val)
+}
+
+//vecは昇順ソート済み
+//以上
+pub fn lower_bound<T: Ord>(vec: &Vec<T>, mut first: usize, mut last: usize, val: &T) -> usize {
+    let mut mid;
+    while last - first > 1 {
+        mid = (first + last) / 2;
+        if &vec[mid] < val {
+            first = mid;
+        } else {
+            last = mid;
+        }
+    }
+    if &vec[first] < val {
+        last
+    } else {
+        first
+    }
+}
+
+//より大きい
+pub fn upper_bound<T: Ord>(vec: &Vec<T>, mut first: usize, mut last: usize, val: &T) -> usize {
+    let mut mid;
+    while last - first > 1 {
+        mid = (first + last) / 2;
+        if &vec[mid] <= val {
+            first = mid;
+        } else {
+            last = mid;
+        }
+    }
+    if &vec[first] <= val {
+        last
+    } else {
+        first
+    }
 }
