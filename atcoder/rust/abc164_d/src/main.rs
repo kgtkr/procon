@@ -79,22 +79,13 @@ fn main() {
 fn solve(input: String) -> String {
     input!(input => (s: #));
 
-    // 10^i mod 2019
-    let mod2019 = (0..210000)
-        .scan(1i64, |state, _| {
-            let ret = *state;
-            *state = (*state * 10) % 2019;
-            Some(ret)
-        })
-        .collect::<Vec<_>>();
-
     s.chars()
         .map(|c| (c as u32 - '0' as u32) as i64)
         .rev()
-        .enumerate()
-        .scan(0, |state, (i, x)| {
-            *state = (*state + x * mod2019[i]) % 2019;
-            Some(*state)
+        .scan((0, 1), |(cur, digit10), x| {
+            *cur = (*cur + x * *digit10) % 2019;
+            *digit10 = (*digit10 * 10) % 2019;
+            Some(*cur)
         })
         .fold(
             {
