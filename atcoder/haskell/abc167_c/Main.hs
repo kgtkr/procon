@@ -6,12 +6,24 @@ import Control.Monad
 import Data.Bifunctor
 import Control.Applicative
 import Data.Monoid
+import Data.Coerce
 
 main :: IO ()
 main = do
     [n, m, x] <- fmap (read @Int) . words <$> getLine
     list <- replicateM n $ fromJust . uncons . fmap (read @Int) . words <$> getLine
-    print $ (fromMaybe (-1) . foldl1May min . map fst . filter (all (>= x) . take m . snd) . fmap (bimap getSum (fmap getSum . getZipList . getAp)) . fmap mconcat . traverse (: [mempty]) . fmap (bimap Sum (Ap . ZipList . fmap Sum))) list
+    print $ (
+            fromMaybe (-1) .
+            foldl1May min .
+            map fst .
+            filter (all (>= x) . snd) .
+            id @[(Int, [Int])] .
+            coerce .
+            fmap mconcat .
+            traverse (: [mempty]) .
+            id @[(Sum Int, Ap ZipList (Sum Int))] .
+            coerce
+        ) list
     pure ()
 
 
