@@ -133,28 +133,11 @@ fn solve(input: String) -> String {
                 res.push(if !is_flip {
                     get_value(n, row[a], col[b])
                 } else {
-                    get_value(n, col[b], row[a])
+                    get_value(n, row[b], col[a])
                 })
             }
             _ => panic!(),
         }
-
-        println!("{:?}", q);
-        for i in 0..n {
-            for j in 0..n {
-                print!(
-                    "{} ",
-                    if !is_flip {
-                        get_value(n, row[i], col[j])
-                    } else {
-                        get_value(n, col[j], row[i])
-                    }
-                );
-            }
-            println!();
-        }
-
-        println!("------");
     }
 
     res.into_iter()
