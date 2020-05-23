@@ -107,22 +107,26 @@ fn solve(input: String) -> String {
         .to_string()
 }
 
-// point, stateの時ゴールまでの最短時間
+// point, stateの時ゴールまでの最短残り時間
 // stateは次する行動
 fn f(input: &Input, point: i64, state: i64) -> i64 {
+    // 一回の関数でpointからpoint+1まで進むのでそれに掛かる時間を求める
+    // pointを「通り過ぎる」と考える
     let res = if point == input.l {
         0
     } else {
         let is_jump = match state {
+            3 | 4 | 7 | 8 | 9 | 10 | 11 | 12 => true,
             0 | 1 | 2 | 5 | 6 | 13 => false,
-            _ => true,
+            _ => panic!(),
         };
         let time = if is_jump { input.t2 } else { input.t1 };
 
         // 0→1 | 1→2 2→3 | 3→4
         let all_jump = match state {
             4 | 8 | 9 | 10 | 11 | 12 => true,
-            _ => false,
+            0 | 1 | 2 | 3 | 5 | 6 | 7 | 13 => false,
+            _ => panic!(),
         };
 
         let add_time = if !all_jump && input.xs.contains(&point) {
