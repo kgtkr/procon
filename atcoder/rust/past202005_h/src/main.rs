@@ -101,25 +101,19 @@ fn solve(input: String) -> String {
     // 2: 1-2-1 -- 2 ; 3 4 ; 5
     // 3: 1-6-1 -- 6 ; 7 8 9 10 11 12 ; 13
     // この合計パターン
-
-    // 10がゴール
-    // 2 4 6 8にハードル
-    // 1 10 50
-    let mut res = f(&input, 0, 0).min(f(&input, 0, 2)).min(f(&input, 0, 6));
-    res.1.reverse();
-
-    println!("{}", res.1.join("\n"));
-
-    res.0.to_string()
+    f(&input, 0, 0)
+        .min(f(&input, 0, 2))
+        .min(f(&input, 0, 6))
+        .to_string()
 }
 
 // point, stateの時ゴールまでの最短残り時間
 // stateは次する行動
-fn f(input: &Input, point: i64, state: i64) -> (i64, Vec<String>) {
+fn f(input: &Input, point: i64, state: i64) -> i64 {
     // 一回の関数でpointからpoint+1まで進むのでそれに掛かる時間を求める
     // pointを「通り過ぎる」と考える
     let res = if point == input.l {
-        (0, Vec::new())
+        0
     } else {
         let is_jump = match state {
             3 | 4 | 7 | 8 | 9 | 10 | 11 | 12 => true,
@@ -141,19 +135,15 @@ fn f(input: &Input, point: i64, state: i64) -> (i64, Vec<String>) {
             0
         };
 
-        let mut prev = match state {
-            1 | 5 | 13 => {
-                f(input, point + 1, 0)
-                    .min(f(input, point + 1, 2))
-                    .min(f(input, point + 1, 6))
+        time + add_time
+            + match state {
+                1 | 5 | 13 => {
+                    f(input, point + 1, 0)
+                        .min(f(input, point + 1, 2))
+                        .min(f(input, point + 1, 6))
+                }
+                _ => f(input, point + 1, state + 1),
             }
-            _ => f(input, point + 1, state + 1),
-        };
-        prev.1.push(format!(
-            "state: {}, point: {}, time: {}, add_time: {}",
-            state, point, time, add_time
-        ));
-        (time + add_time + prev.0, prev.1)
     };
 
     res
