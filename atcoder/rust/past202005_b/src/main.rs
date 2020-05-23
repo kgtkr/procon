@@ -25,22 +25,22 @@ macro_rules! line_parse {
 }
 
 macro_rules! value_def {
-    ($line:expr, $name:ident, $t:tt) => {
-        let $name = value!($line, $t);
-    };
+  ($line:expr, $name:ident, $t:tt) => {
+    let $name = value!($line, $t);
+  };
 }
 
 macro_rules! values_def {
-    ($lines:expr, $n:expr, $name:ident, $t:tt) => {
-        let $name = {
-            let mut vec = Vec::new();
-            for i in 0..$n {
-                let mut next = $lines.next().unwrap().split_whitespace();
-                vec.push(value!(next, $t));
-            }
-            vec
-        };
+  ($lines:expr, $n:expr, $name:ident, $t:tt) => {
+    let $name = {
+      let mut vec = Vec::new();
+      for i in 0..$n {
+        let mut next = $lines.next().unwrap().split_whitespace();
+        vec.push(value!(next, $t));
+      }
+      vec
     };
+  };
 }
 
 macro_rules! value {
@@ -70,16 +70,49 @@ macro_rules! value {
 }
 
 fn main() {
-    let mut input = String::new();
-    io::stdin().read_to_string(&mut input).unwrap();
-    let output = solve(input.trim().to_string());
-    println!("{}", output);
+  let mut input = String::new();
+  io::stdin().read_to_string(&mut input).unwrap();
+  let output = solve(input.trim().to_string());
+  println!("{}", output);
 }
 
 fn solve(input: String) -> String {
-    input!(input=>(a:i64 b:i64));
-    let n = a + b;
-    n.to_string()
+  input!(input=>(n:usize m:usize q:usize){q;list:[usize]});
+  // 問題iを解いた参加者
+  let mut ac = Vec::with_capacity(m);
+  ac.resize(m, Vec::<usize>::new());
+
+  // 各参加者iの点数
+  let mut points = Vec::with_capacity(n);
+  points.resize(n, 0);
+
+  let mut res = Vec::new();
+
+  for q in list {
+    match &q[..] {
+      &[1, a] => {
+        let a = a - 1;
+        res.push(points[a]);
+      }
+      &[2, a, b] => {
+        let a = a - 1;
+        let b = b - 1;
+        points[a] += n - ac[b].len();
+        ac[b].push(a);
+        for &i in &ac[b] {
+          points[i] -= 1;
+        }
+      }
+      s => panic!("{:?}", s),
+    }
+  }
+
+  res
+    .into_iter()
+    .map(|x| x.to_string())
+    .collect::<Vec<_>>()
+    .join("\n")
+    .to_string()
 }
 
 macro_rules! tests {
@@ -96,9 +129,6 @@ macro_rules! tests {
 }
 
 tests! {
-    test1: "3 9" => "12",
-    test2: "31 32" => "63",
-    test3: "1 2" => "3",
-    test4: "-1 2" => "1",
-    test5: "10 1" => "11",
+  test1: "2 1 6\n2 1 1\n1 1\n1 2\n2 2 1\n1 1\n1 2\n" => "1\n0\n0\n0\n",
+  test2: "5 5 30\n1 3\n2 3 5\n1 3\n2 2 1\n2 4 5\n2 5 2\n2 2 3\n1 4\n2 4 1\n2 2 2\n1 1\n1 5\n2 5 3\n2 4 4\n1 4\n1 2\n2 3 3\n2 4 3\n1 3\n1 5\n1 3\n2 1 3\n1 1\n2 2 4\n1 1\n1 4\n1 5\n1 4\n1 1\n1 5\n" => "0\n4\n3\n0\n3\n10\n9\n4\n4\n4\n0\n0\n9\n3\n9\n0\n3\n",
 }
