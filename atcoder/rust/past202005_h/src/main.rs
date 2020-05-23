@@ -96,20 +96,31 @@ fn solve(input: String) -> String {
 
     let input = Input { l, xs, t1, t2, t3 };
 
+    let mut dp = Vec::with_capacity(14);
+    dp.resize(14, {
+        let mut v = Vec::with_capacity(l as usize + 1);
+        v.resize(l as usize + 1, None);
+        v
+    });
+
     // 各位置にたどり着く最短時間を求めるDP？
     // 1: 2 -- 0 1
     // 2: 1-2-1 -- 2 ; 3 4 ; 5
     // 3: 1-6-1 -- 6 ; 7 8 9 10 11 12 ; 13
     // この合計パターン
-    f(&input, 0, 0)
-        .min(f(&input, 0, 2))
-        .min(f(&input, 0, 6))
+    f(&input, &mut dp, 0, 0)
+        .min(f(&input, &mut dp, 0, 2))
+        .min(f(&input, &mut dp, 0, 6))
         .to_string()
 }
 
 // point, stateの時ゴールまでの最短残り時間
 // stateは次する行動
-fn f(input: &Input, point: i64, state: i64) -> i64 {
+fn f(input: &Input, dp: &mut Vec<Vec<Option<i64>>>, point: i64, state: i64) -> i64 {
+    if let Some(res) = dp[state as usize][point as usize] {
+        return res;
+    }
+
     // 一回の関数でpointからpoint+1まで進むのでそれに掛かる時間を求める
     // pointを「通り過ぎる」と考える
     let res = if point == input.l {
@@ -137,14 +148,14 @@ fn f(input: &Input, point: i64, state: i64) -> i64 {
 
         time + add_time
             + match state {
-                1 | 5 | 13 => {
-                    f(input, point + 1, 0)
-                        .min(f(input, point + 1, 2))
-                        .min(f(input, point + 1, 6))
-                }
-                _ => f(input, point + 1, state + 1),
+                1 | 5 | 13 => f(input, dp, point + 1, 0)
+                    .min(f(input, dp, point + 1, 2))
+                    .min(f(input, dp, point + 1, 6)),
+                _ => f(input, dp, point + 1, state + 1),
             }
     };
+
+    dp[state as usize][point as usize] = Some(res);
 
     res
 }
