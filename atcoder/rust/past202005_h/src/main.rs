@@ -130,7 +130,7 @@ fn f(input: &Input, point: i64, state: i64) -> i64 {
         };
 
         let add_time = if !all_jump && input.xs.contains(&point) {
-            input.t3
+            input.t3 * 2
         } else {
             0
         };
