@@ -80,19 +80,8 @@ fn solve(input: String) -> String {
     input!(input=>(t:#));
     // ?はD
     t.chars()
-        .map(|x| if x == '?' { 'D' } else { 'P' })
-        .fold((0i64, None), |(cur, prev), x| {
-            (
-                cur + match (prev, x) {
-                    (Some('P'), 'D') => 2,
-                    (_, 'D') => 1,
-                    _ => 0,
-                },
-                Some(x),
-            )
-        })
-        .0
-        .to_string()
+        .map(|x| if x == '?' { 'D' } else { x })
+        .collect::<String>()
 }
 
 macro_rules! tests {
